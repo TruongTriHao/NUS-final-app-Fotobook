@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { User } from "../types/User";
 import { AuthContext } from "./AuthContext";
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children?: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const raw = localStorage.getItem("user");
     if (!raw) return null;
