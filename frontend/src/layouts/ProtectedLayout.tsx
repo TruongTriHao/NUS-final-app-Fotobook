@@ -3,8 +3,10 @@ import { useAuth } from "../hooks/useAuth";
 
 export function ProtectedLayout({
   requireAdmin = false,
+  children,
 }: {
   requireAdmin?: boolean;
+  children?: React.ReactNode;
 }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -17,5 +19,5 @@ export function ProtectedLayout({
     return <Navigate to="/discover" replace />;
   }
 
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 }
