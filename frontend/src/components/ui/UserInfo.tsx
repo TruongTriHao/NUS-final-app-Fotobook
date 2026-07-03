@@ -21,7 +21,11 @@ export function UserInfo({
       className={cn("flex items-center gap-1", forNavbar && alternativeStyle1)}
     >
       {avatarUrl ? (
-        <Photo className="rounded-full w-8 h-8" src={avatarUrl} />
+        <Photo
+          className="rounded-full w-8 h-8"
+          src={avatarUrl}
+          alt={`${firstName} ${lastName}'s avatar`}
+        />
       ) : (
         <div
           className={cn(
