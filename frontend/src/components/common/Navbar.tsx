@@ -19,7 +19,7 @@ export function Navbar() {
         <UserInfo
           firstName={user?.firstName ?? ""}
           lastName={user?.lastName ?? ""}
-          avatarUrl={user?.avatarUrl ?? ""}
+          avatarUrl={user?.avatarUrl ?? undefined}
           outerClassName="justify-start overflow-hidden"
           defaultAvatarClassName="text-indigo-800 bg-white"
           nameClassName="text-white hidden md:block"
