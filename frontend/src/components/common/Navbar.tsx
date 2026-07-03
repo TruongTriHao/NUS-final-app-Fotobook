@@ -20,7 +20,9 @@ export function Navbar() {
           firstName={user?.firstName ?? ""}
           lastName={user?.lastName ?? ""}
           avatarUrl={user?.avatarUrl ?? ""}
-          forNavbar
+          outerClassName="justify-start overflow-hidden"
+          defaultAvatarClassName="text-indigo-800 bg-white"
+          nameClassName="text-white hidden md:block"
         />
       ) : (
         <div />

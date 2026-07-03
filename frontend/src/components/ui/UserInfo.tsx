@@ -5,21 +5,19 @@ export function UserInfo({
   firstName,
   lastName,
   avatarUrl,
-  forNavbar = false,
+  outerClassName,
+  defaultAvatarClassName,
+  nameClassName,
 }: {
   firstName: string;
   lastName: string;
   avatarUrl?: string;
-  forNavbar?: boolean;
+  outerClassName?: string;
+  defaultAvatarClassName?: string;
+  nameClassName?: string;
 }) {
-  const alternativeStyle1 = "justify-start overflow-hidden";
-  const alternativeStyle2 = "text-indigo-800 bg-white";
-  const alternativeStyle3 = "text-white hidden md:block";
-
   return (
-    <div
-      className={cn("flex items-center gap-1", forNavbar && alternativeStyle1)}
-    >
+    <div className={cn("flex items-center gap-1", outerClassName)}>
       {avatarUrl ? (
         <Photo
           className="rounded-full w-8 h-8"
@@ -28,23 +26,13 @@ export function UserInfo({
         />
       ) : (
         <div
-          className={cn(
-            "rounded-full p-2 font-bold",
-            forNavbar
-              ? alternativeStyle2
-              : "text-white text-xs md:text-sm bg-indigo-800",
-          )}
+          className={cn("rounded-full p-2 font-bold", defaultAvatarClassName)}
         >
           {firstName.charAt(0)}
           {lastName.charAt(0)}
         </div>
       )}
-      <div
-        className={cn(
-          "p-2",
-          forNavbar ? alternativeStyle3 : "text-indigo-800 text-xs md:text-sm",
-        )}
-      >
+      <div className={cn("p-2", nameClassName)}>
         {firstName} {lastName}
       </div>
     </div>
