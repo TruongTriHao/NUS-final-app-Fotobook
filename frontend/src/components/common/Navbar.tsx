@@ -13,7 +13,7 @@ export function Navbar() {
         "grid grid-cols-[1fr_3fr_1fr_0.5fr] items-center fixed top-0 left-0 right-0 bg-indigo-800 gap-2 min-h-12 z-50"
       }
     >
-      <Logo />
+      <Logo isAdmin={user?.role === "admin"} />
       <SearchBar />
       {isAuthenticated ? (
         <UserInfo
