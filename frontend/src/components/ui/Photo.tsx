@@ -11,7 +11,10 @@ export function Photo({
 }) {
   return (
     <img
-      className={cn("aspect-square object-cover rounded-sm", className)}
+      className={cn(
+        "aspect-square object-cover rounded-sm shrink-0",
+        className,
+      )}
       src={src}
       alt={alt}
     />
