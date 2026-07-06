@@ -1,0 +1,82 @@
+[
+  {
+    "id": "a",
+    "firstName": "Natassia",
+    "lastName": "Borrell",
+    "email": "nborrell0@intel.com",
+    "role": "user",
+    "avatarUrl": ""
+  },
+  {
+    "id": "b",
+    "firstName": "Adolph",
+    "lastName": "Wickrath",
+    "email": "awickrath1@blogs.com",
+    "role": "admin",
+    "avatarUrl": "https://picsum.photos/seed/Cbu5rv9yNI/200/"
+  },
+  {
+    "id": "c",
+    "firstName": "Sanders",
+    "lastName": "Dean",
+    "email": "sdean2@sohu.com",
+    "role": "admin",
+    "avatarUrl": "https://picsum.photos/seed/TcotoVGAKo/200/"
+  },
+  {
+    "id": "d",
+    "firstName": "Effie",
+    "lastName": "Brader",
+    "email": "ebrader3@timesonline.co.uk",
+    "role": "admin",
+    "avatarUrl": "https://picsum.photos/seed/45WUFdiZX0/200/"
+  },
+  {
+    "id": "e",
+    "firstName": "Stace",
+    "lastName": "Garroway",
+    "email": "sgarroway4@thetimes.co.uk",
+    "role": "admin",
+    "avatarUrl": ""
+  },
+  {
+    "id": "f",
+    "firstName": "Shaughn",
+    "lastName": "McCollum",
+    "email": "smccollum5@ning.com",
+    "role": "admin",
+    "avatarUrl": "https://picsum.photos/seed/pCRjGTqEEF/200/"
+  },
+  {
+    "id": "g",
+    "firstName": "Noe",
+    "lastName": "Orr",
+    "email": "norr6@ca.gov",
+    "role": "user",
+    "avatarUrl": "https://picsum.photos/seed/j53ooiiImL/200/"
+  },
+  {
+    "id": "h",
+    "firstName": "Aloysius",
+    "lastName": "Guise",
+    "email": "aguise7@discovery.com",
+    "role": "user",
+    "avatarUrl": "https://picsum.photos/seed/FrNnP21GtP/200/"
+  },
+  {
+    "id": "i",
+    "firstName": "Olenolin",
+    "lastName": "Hallsworth",
+    "email": "ohallsworth8@alibaba.com",
+    "role": "user",
+    "avatarUrl": "https://picsum.photos/seed/UktV9a8u8S/200/"
+  },
+  {
+    "id": "j",
+    "firstName": "Magnum",
+    "lastName": "Blackwell",
+    "email": "mblackwell9@histats.com",
+    "role": "user",
+    "avatarUrl": "https://picsum.photos/seed/FxKXTLqGCn/200/"
+  }
+]

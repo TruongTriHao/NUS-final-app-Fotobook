@@ -1,0 +1,12 @@
+[
+  { "followerId": "a", "followingId": "b" },
+  { "followerId": "b", "followingId": "c" },
+  { "followerId": "c", "followingId": "d" },
+  { "followerId": "d", "followingId": "e" },
+  { "followerId": "e", "followingId": "f" },
+  { "followerId": "f", "followingId": "g" },
+  { "followerId": "g", "followingId": "h" },
+  { "followerId": "h", "followingId": "i" },
+  { "followerId": "i", "followingId": "j" },
+  { "followerId": "j", "followingId": "a" }
+]
