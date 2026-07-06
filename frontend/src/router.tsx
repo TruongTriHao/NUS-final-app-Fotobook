@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AdminLayout } from "./layouts/AdminLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
+import { OwnerProtectedLayout } from "./layouts/OwnerProtectedLayout";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { RootLayout } from "./layouts/RootLayout";
 import { DiscoverPage } from "./pages/DiscoverPage";
@@ -35,9 +36,23 @@ export const router = createBrowserRouter([
           { path: "/me", element: <ProfilePage /> },
           { path: "/profile/edit", element: <EditProfilePage /> },
           { path: "/photos/new", element: <NewPhotoPage /> },
-          { path: "/photos/:id/edit", element: <EditPhotoPage /> },
+          {
+            path: "/photos/:id/edit",
+            element: (
+              <OwnerProtectedLayout type="photo">
+                <EditPhotoPage />
+              </OwnerProtectedLayout>
+            ),
+          },
           { path: "/albums/new", element: <NewAlbumPage /> },
-          { path: "/albums/:id/edit", element: <EditAlbumPage /> },
+          {
+            path: "/albums/:id/edit",
+            element: (
+              <OwnerProtectedLayout type="album">
+                <EditAlbumPage />
+              </OwnerProtectedLayout>
+            ),
+          },
         ],
       },
     ],
