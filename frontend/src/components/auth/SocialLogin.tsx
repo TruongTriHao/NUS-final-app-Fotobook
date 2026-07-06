@@ -6,9 +6,9 @@ import { SocialLoginButton } from "./SocialLoginButton";
 export function SocialLogin() {
   return (
     <div className="flex justify-evenly items-center border-2 border-neutral-200 rounded-lg shadow-lg m-2 md:m-4">
-      <SocialLoginButton src={googleLogo} />
-      <SocialLoginButton src={facebookLogo} />
-      <SocialLoginButton src={xLogo} />
+      <SocialLoginButton src={googleLogo} alt="Google" />
+      <SocialLoginButton src={facebookLogo} alt="Facebook" />
+      <SocialLoginButton src={xLogo} alt="X" />
     </div>
   );
 }
