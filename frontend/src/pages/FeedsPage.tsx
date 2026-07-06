@@ -1,3 +1,5 @@
+import { Tabs } from "../components/main/Tabs";
+
 export function FeedsPage() {
-  return <>Not implemented yet</>;
+  return <Tabs type="feeds" />;
 }
