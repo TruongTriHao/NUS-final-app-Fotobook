@@ -5,4 +5,6 @@ export type User = {
   email: string;
   role: "user" | "admin";
   avatarUrl?: string | null;
+  lastLogin?: string | null;
+  isActive: boolean;
 };

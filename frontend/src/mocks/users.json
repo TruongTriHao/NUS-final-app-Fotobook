@@ -5,7 +5,9 @@
     "lastName": "Borrell",
     "email": "nborrell0@intel.com",
     "role": "user",
-    "avatarUrl": ""
+    "avatarUrl": "",
+    "lastLogin": "2025-11-20T09:14:08Z",
+    "isActive": true
   },
   {
     "id": "b",
@@ -13,7 +15,9 @@
     "lastName": "Wickrath",
     "email": "awickrath1@blogs.com",
     "role": "admin",
-    "avatarUrl": "https://picsum.photos/seed/Cbu5rv9yNI/200/"
+    "avatarUrl": "https://picsum.photos/seed/Cbu5rv9yNI/1280/720/",
+    "lastLogin": "2025-09-06T13:02:13Z",
+    "isActive": true
   },
   {
     "id": "c",
@@ -21,7 +25,9 @@
     "lastName": "Dean",
     "email": "sdean2@sohu.com",
     "role": "admin",
-    "avatarUrl": "https://picsum.photos/seed/TcotoVGAKo/200/"
+    "avatarUrl": "https://picsum.photos/seed/TcotoVGAKo/1280/720/",
+    "lastLogin": "2025-06-01T14:18:29Z",
+    "isActive": true
   },
   {
     "id": "d",
@@ -29,7 +35,9 @@
     "lastName": "Brader",
     "email": "ebrader3@timesonline.co.uk",
     "role": "admin",
-    "avatarUrl": "https://picsum.photos/seed/45WUFdiZX0/200/"
+    "avatarUrl": "https://picsum.photos/seed/45WUFdiZX0/1280/720/",
+    "lastLogin": "2025-07-21T03:05:19Z",
+    "isActive": true
   },
   {
     "id": "e",
@@ -37,7 +45,9 @@
     "lastName": "Garroway",
     "email": "sgarroway4@thetimes.co.uk",
     "role": "admin",
-    "avatarUrl": ""
+    "avatarUrl": "",
+    "lastLogin": "2025-09-17T17:37:50Z",
+    "isActive": true
   },
   {
     "id": "f",
@@ -45,7 +55,9 @@
     "lastName": "McCollum",
     "email": "smccollum5@ning.com",
     "role": "admin",
-    "avatarUrl": "https://picsum.photos/seed/pCRjGTqEEF/200/"
+    "avatarUrl": "https://picsum.photos/seed/pCRjGTqEEF/1280/720/",
+    "lastLogin": null,
+    "isActive": true
   },
   {
     "id": "g",
@@ -53,7 +65,8 @@
     "lastName": "Orr",
     "email": "norr6@ca.gov",
     "role": "user",
-    "avatarUrl": "https://picsum.photos/seed/j53ooiiImL/200/"
+    "avatarUrl": "https://picsum.photos/seed/j53ooiiImL/1280/720/",
+    "isActive": true
   },
   {
     "id": "h",
@@ -61,7 +74,9 @@
     "lastName": "Guise",
     "email": "aguise7@discovery.com",
     "role": "user",
-    "avatarUrl": "https://picsum.photos/seed/FrNnP21GtP/200/"
+    "avatarUrl": "https://picsum.photos/seed/FrNnP21GtP/1280/720/",
+    "lastLogin": "2026-06-18T07:05:18Z",
+    "isActive": true
   },
   {
     "id": "i",
@@ -69,7 +84,9 @@
     "lastName": "Hallsworth",
     "email": "ohallsworth8@alibaba.com",
     "role": "user",
-    "avatarUrl": "https://picsum.photos/seed/UktV9a8u8S/200/"
+    "avatarUrl": "https://picsum.photos/seed/UktV9a8u8S/1280/720/",
+    "lastLogin": "2025-09-21T05:36:55Z",
+    "isActive": true
   },
   {
     "id": "j",
@@ -77,6 +94,8 @@
     "lastName": "Blackwell",
     "email": "mblackwell9@histats.com",
     "role": "user",
-    "avatarUrl": "https://picsum.photos/seed/FxKXTLqGCn/200/"
+    "avatarUrl": "https://picsum.photos/seed/FxKXTLqGCn/1280/720/",
+    "lastLogin": "2025-10-02T06:58:29Z",
+    "isActive": true
   }
 ]

@@ -6,5 +6,5 @@ export type Photo = {
   createdAt: string;
   likeCount: number;
   mode: "public" | "private";
-  user: string;
+  ownerId: string;
 };

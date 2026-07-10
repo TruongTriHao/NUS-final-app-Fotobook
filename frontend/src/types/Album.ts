@@ -6,5 +6,5 @@ export type Album = {
   createdAt: string;
   likeCount: number;
   mode: "public" | "private";
-  user: string;
+  ownerId: string;
 };
