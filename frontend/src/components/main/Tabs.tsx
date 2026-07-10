@@ -3,8 +3,10 @@ import { AlbumContent } from "../main/AlbumContent";
 import { PhotoContent } from "../main/PhotoContent";
 import { TabButton } from "./TabButton";
 
+type ActiveTab = "PHOTO" | "ALBUM";
+
 export function Tabs({ type }: { type: "feeds" | "discover" }) {
-  const [activeTab, setActiveTab] = useState("PHOTO");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("PHOTO");
 
   return (
     <>
