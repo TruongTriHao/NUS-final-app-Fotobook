@@ -1,6 +1,6 @@
 import type { User } from "../../types/User";
 import { cn } from "../../utils/cn";
-import { Avatar } from "../ui/Avatar";
+import { Avatar } from "./Avatar";
 
 export function UserInfo({
   user,

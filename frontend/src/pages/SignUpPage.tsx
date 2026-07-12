@@ -1,11 +1,11 @@
-import { AuthTitle } from "../components/auth/AuthTitle";
 import { SignUpForm } from "../components/auth/SignUpForm";
 import { SocialLogin } from "../components/auth/SocialLogin";
+import { Title } from "../components/ui/Title";
 
 export function SignUpPage() {
   return (
     <>
-      <AuthTitle>Fotobook Signup</AuthTitle>
+      <Title>Fotobook Signup</Title>
       <SocialLogin />
       <SignUpForm />
     </>

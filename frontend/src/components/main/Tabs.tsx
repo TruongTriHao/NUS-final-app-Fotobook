@@ -3,30 +3,30 @@ import { AlbumContent } from "../main/AlbumContent";
 import { PhotoContent } from "../main/PhotoContent";
 import { TabButton } from "./TabButton";
 
-type ActiveTab = "PHOTO" | "ALBUM";
+type ActiveTab = "photo" | "album";
 
 export function Tabs({ type }: { type: "feeds" | "discover" }) {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("PHOTO");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("photo");
 
   return (
     <>
       <div className="flex justify-center m-3.5">
         <TabButton
           label="PHOTO"
-          active={activeTab === "PHOTO"}
+          active={activeTab === "photo"}
           onClick={() => {
-            setActiveTab("PHOTO");
+            setActiveTab("photo");
           }}
         />
         <TabButton
           label="ALBUM"
-          active={activeTab === "ALBUM"}
+          active={activeTab === "album"}
           onClick={() => {
-            setActiveTab("ALBUM");
+            setActiveTab("album");
           }}
         />
       </div>
-      {activeTab === "PHOTO" ? (
+      {activeTab === "photo" ? (
         <PhotoContent type={type} />
       ) : (
         <AlbumContent type={type} />
