@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { albumService } from "../../services/albumService";
-import type { Album } from "../../types/Album";
+import type { AlbumWithUser } from "../../types/Album";
+import { Alert } from "../ui/Alert";
+import { Loading } from "../ui/Loading";
 import { AlbumCard } from "./AlbumCard";
 import { CardGrid } from "./CardGrid";
 
 export function AlbumContent({ type }: { type: "feeds" | "discover" }) {
   const { user: currentUser } = useAuth();
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<AlbumWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +19,10 @@ export function AlbumContent({ type }: { type: "feeds" | "discover" }) {
       try {
         setLoading(true);
         setError(null);
-        const data = await albumService.getAlbums(type, currentUser?.id ?? "");
+        const data = await albumService.getAlbumsForMain(
+          type,
+          currentUser?.id ?? "",
+        );
         if (isMounted) {
           setAlbums(data);
         }
@@ -40,11 +45,11 @@ export function AlbumContent({ type }: { type: "feeds" | "discover" }) {
   }, [currentUser?.id, type]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <Alert message={error} />;
   }
 
   if (albums.length === 0) {
@@ -54,15 +59,7 @@ export function AlbumContent({ type }: { type: "feeds" | "discover" }) {
   return (
     <CardGrid>
       {albums.map((album) => (
-        <AlbumCard
-          key={album.id}
-          src={[album.images[0], album.images[1], album.images[2]]}
-          userId={album.user}
-          title={album.title}
-          description={album.description}
-          likeCount={album.likeCount}
-          createdAt={album.createdAt}
-        />
+        <AlbumCard key={album.id} album={album} />
       ))}
     </CardGrid>
   );

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { photoService } from "../../services/photoService";
-import type { Photo } from "../../types/Photo";
+import type { PhotoWithUser } from "../../types/Photo";
+import { Alert } from "../ui/Alert";
+import { Loading } from "../ui/Loading";
 import { CardGrid } from "./CardGrid";
 import { PhotoCard } from "./PhotoCard";
 
 export function PhotoContent({ type }: { type: "feeds" | "discover" }) {
   const { user: currentUser } = useAuth();
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<PhotoWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +19,10 @@ export function PhotoContent({ type }: { type: "feeds" | "discover" }) {
       try {
         setLoading(true);
         setError(null);
-        const data = await photoService.getPhotos(type, currentUser?.id ?? "");
+        const data = await photoService.getPhotosForMain(
+          type,
+          currentUser?.id ?? "",
+        );
         if (isMounted) {
           setPhotos(data);
         }
@@ -40,11 +45,11 @@ export function PhotoContent({ type }: { type: "feeds" | "discover" }) {
   }, [currentUser?.id, type]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <Alert message={error} />;
   }
 
   if (photos.length === 0) {
@@ -54,15 +59,7 @@ export function PhotoContent({ type }: { type: "feeds" | "discover" }) {
   return (
     <CardGrid>
       {photos.map((photo) => (
-        <PhotoCard
-          key={photo.id}
-          src={photo.imageUrl}
-          userId={photo.user}
-          title={photo.title}
-          description={photo.description}
-          likeCount={photo.likeCount}
-          createdAt={photo.createdAt}
-        />
+        <PhotoCard key={photo.id} photo={photo} />
       ))}
     </CardGrid>
   );

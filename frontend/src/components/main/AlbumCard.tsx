@@ -1,74 +1,48 @@
-import { useEffect, useState } from "react";
-import { userService } from "../../services/userService";
-import type { User } from "../../types/User";
-import { UserInfo } from "../main/UserInfo";
+import { useState } from "react";
+import type { AlbumWithUser } from "../../types/Album";
 import { Album } from "../ui/Album";
+import { AlbumModal } from "../ui/AlbumModal";
+import { UserInfo } from "../ui/UserInfo";
 import { CardFooter } from "./CardFooter";
 import { CardText } from "./CardText";
 
-export function AlbumCard({
-  src,
-  userId,
-  title,
-  description,
-  likeCount,
-  createdAt,
-}: {
-  src: [string, string | null, string | null];
-  userId: string;
-  title: string;
-  description: string;
-  likeCount: number;
-  createdAt: string;
-}) {
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchUser = async () => {
-      try {
-        setError(null);
-        const data = await userService.getUserById(userId);
-        if (isMounted) {
-          setUser(data);
-        }
-      } catch (e) {
-        if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching user");
-        }
-      }
-    };
-
-    void fetchUser();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userId]);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+export function AlbumCard({ album }: { album: AlbumWithUser }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex m-2.5 bg-stone-50 rounded-sm shadow-lg h-34.25 md:h-68.5 overflow-hidden">
-      <Album
-        src={src}
-        className="w-25 md:w-60"
-        imageClassName="translate-x-3 translate-y-3"
-        alt={title}
-      />
-      <div className="flex flex-col justify-between mx-5 my-2">
-        <UserInfo
-          user={user}
-          avatarClassName="text-white text-xs md:text-sm bg-indigo-800"
-          nameClassName="text-indigo-800 text-xs md:text-sm"
-          to={`/profile/${user?.id ?? ""}`}
+    <>
+      <div className="flex m-2.5 bg-stone-50 rounded-sm shadow-lg h-34.25 md:h-68.5 overflow-hidden">
+        <Album
+          src={[
+            album.images[0],
+            album.images[1] ?? null,
+            album.images[2] ?? null,
+          ]}
+          className="w-25 md:w-60 cursor-pointer"
+          imageClassName="translate-x-3 translate-y-3"
+          alt={album.title}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
         />
-        <CardText title={title} description={description} />
-        <CardFooter likeCount={likeCount} createdAt={createdAt} />
+        <div className="flex flex-col justify-between mx-5 my-2">
+          <UserInfo
+            user={album.owner}
+            avatarClassName="text-white text-xs md:text-sm bg-indigo-800"
+            nameClassName="text-indigo-800 text-xs md:text-sm"
+            to={`/profile/${album.ownerId}`}
+          />
+          <CardText title={album.title} description={album.description} />
+          <CardFooter likeCount={album.likeCount} createdAt={album.createdAt} />
+        </div>
       </div>
-    </div>
+      <AlbumModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        album={album}
+      />
+    </>
   );
 }
