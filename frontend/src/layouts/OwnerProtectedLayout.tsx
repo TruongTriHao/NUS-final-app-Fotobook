@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { Alert } from "../components/ui/Alert";
+import { Loading } from "../components/ui/Loading";
 import { useAuth } from "../hooks/useAuth";
 import { albumService } from "../services/albumService";
 import { photoService } from "../services/photoService";
@@ -17,12 +18,14 @@ export function OwnerProtectedLayout({
   const { user } = useAuth();
   const id = useParams().id as string;
   const [content, setContent] = useState<Photo | Album | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchContent = async () => {
       try {
+        setLoading(true);
         setError(null);
         const data =
           type === "photo"
@@ -35,6 +38,10 @@ export function OwnerProtectedLayout({
         if (isMounted) {
           setError(e instanceof Error ? e.message : "Error fetching content");
         }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -44,6 +51,10 @@ export function OwnerProtectedLayout({
       isMounted = false;
     };
   }, [id, type]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (error) {
     return <Alert message={error} />;
