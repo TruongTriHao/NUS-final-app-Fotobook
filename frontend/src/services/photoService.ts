@@ -1,59 +1,64 @@
+import follows from "../mocks/follows.json";
 import photos from "../mocks/photos.json";
-import type { Photo } from "../types/Photo";
-import { followService } from "./followService";
+import users from "../mocks/users.json";
+import type { Photo, PhotoWithUser } from "../types/Photo";
+import type { User } from "../types/User";
 
+// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const photoService = {
-  getPhotos: async (
+  getAllPhotos: async (page: number, limit: number): Promise<Photo[]> => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    return (photos as Photo[]).slice(startIndex, endIndex);
+  },
+  getAllCount: async (): Promise<number> => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return (photos as Photo[]).length;
+  },
+  getPhotosForMain: async (
     type: "feeds" | "discover",
     userId: string,
-  ): Promise<Photo[]> => {
+  ): Promise<PhotoWithUser[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const followees = await followService.getFollowees(userId);
-    let result = photos;
+    const followees = follows
+      .filter((follow) => follow.followerId === userId)
+      .map((follow) => follow.followeeId);
+    const photoResult = photos.filter(
+      (photo) =>
+        (type === "discover" || followees.includes(photo.ownerId)) &&
+        photo.mode === "public",
+    ) as Photo[];
 
-    if (type === "feeds") {
-      result = photos.filter(
-        (photo) => followees.includes(photo.user) && photo.mode === "public",
-      );
-    }
-    if (type === "discover") {
-      result = photos.filter((photo) => photo.mode === "public");
-    }
-
-    result.sort(
+    photoResult.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-    return result as Photo[];
+    const userIds = photoResult.map(
+      (p) => (users as User[]).find((user) => user.id === p.ownerId) ?? null,
+    );
+    const result: PhotoWithUser[] = photoResult
+      .map((photo, index) => ({ ...photo, owner: userIds[index] }))
+      .filter((photo) => photo.owner !== null) as PhotoWithUser[];
+
+    return result;
   },
-  getPublicCountByUserId: async (id: string): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return photos.filter(
-      (photo) => photo.user === id && photo.mode === "public",
-    ).length;
-  },
-  getPublicPhotosByUserId: async (userId: string): Promise<Photo[]> => {
+  getPhotosByUserId: async (
+    userId: string,
+    isCurrentUser: boolean,
+  ): Promise<Photo[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return photos
-      .filter((photo) => photo.user === userId && photo.mode === "public")
+      .filter(
+        (photo) =>
+          photo.ownerId === userId &&
+          (isCurrentUser || photo.mode === "public"),
+      )
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ) as Photo[];
-  },
-  getAllPhotosByUserId: async (userId: string): Promise<Photo[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return photos
-      .filter((photo) => photo.user === userId)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ) as Photo[];
-  },
-  getAllCountByUserId: async (id: string): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return photos.filter((photo) => photo.user === id).length;
   },
   getPhotoById: async (id: string): Promise<Photo | null> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));

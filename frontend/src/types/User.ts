@@ -8,3 +8,12 @@ export type User = {
   lastLogin?: string | null;
   isActive: boolean;
 };
+
+export type ProfileData = User & {
+  isCurrentUser: boolean;
+  isFollowee: boolean;
+  numPhotos: number;
+  numAlbums: number;
+  numFollowers: number;
+  numFollowees: number;
+};

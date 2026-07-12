@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type Photo = {
   id: string;
   title: string;
@@ -8,3 +10,5 @@ export type Photo = {
   mode: "public" | "private";
   ownerId: string;
 };
+
+export type PhotoWithUser = Photo & { owner: User };

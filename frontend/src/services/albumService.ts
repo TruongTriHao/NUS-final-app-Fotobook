@@ -1,59 +1,64 @@
 import albums from "../mocks/albums.json";
-import type { Album } from "../types/Album";
-import { followService } from "./followService";
+import follows from "../mocks/follows.json";
+import users from "../mocks/users.json";
+import type { Album, AlbumWithUser } from "../types/Album";
+import type { User } from "../types/User";
 
+// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const albumService = {
-  getAlbums: async (
+  getAllAlbums: async (page: number, limit: number): Promise<Album[]> => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    return (albums as Album[]).slice(startIndex, endIndex);
+  },
+  getAllCount: async (): Promise<number> => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return (albums as Album[]).length;
+  },
+  getAlbumsForMain: async (
     type: "feeds" | "discover",
     userId: string,
-  ): Promise<Album[]> => {
+  ): Promise<AlbumWithUser[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const followees = await followService.getFollowees(userId);
-    let result = albums;
+    const followees = follows
+      .filter((follow) => follow.followerId === userId)
+      .map((follow) => follow.followeeId);
+    const albumResult = albums.filter(
+      (album) =>
+        (type === "discover" || followees.includes(album.ownerId)) &&
+        album.mode === "public",
+    ) as Album[];
 
-    if (type === "feeds") {
-      result = albums.filter(
-        (album) => followees.includes(album.user) && album.mode === "public",
-      );
-    }
-    if (type === "discover") {
-      result = albums.filter((album) => album.mode === "public");
-    }
-
-    result.sort(
+    albumResult.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-    return result as Album[];
+    const userIds = albumResult.map(
+      (a) => (users as User[]).find((user) => user.id === a.ownerId) ?? null,
+    );
+    const result: AlbumWithUser[] = albumResult
+      .map((album, index) => ({ ...album, owner: userIds[index] }))
+      .filter((album) => album.owner !== null) as AlbumWithUser[];
+
+    return result;
   },
-  getPublicCountByUserId: async (id: string): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return albums.filter(
-      (album) => album.user === id && album.mode === "public",
-    ).length;
-  },
-  getPublicAlbumsByUserId: async (userId: string): Promise<Album[]> => {
+  getAlbumsByUserId: async (
+    userId: string,
+    isCurrentUser: boolean,
+  ): Promise<Album[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return albums
-      .filter((album) => album.user === userId && album.mode === "public")
+      .filter(
+        (album) =>
+          album.ownerId === userId &&
+          (isCurrentUser || album.mode === "public"),
+      )
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ) as Album[];
-  },
-  getAllAlbumsByUserId: async (userId: string): Promise<Album[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return albums
-      .filter((album) => album.user === userId)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ) as Album[];
-  },
-  getAllCountByUserId: async (id: string): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return albums.filter((album) => album.user === id).length;
   },
   getAlbumById: async (id: string): Promise<Album | null> => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
