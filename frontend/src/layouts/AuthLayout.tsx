@@ -1,7 +1,14 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Navbar } from "../components/common/Navbar";
+import { useAuth } from "../hooks/useAuth";
 
 export function AuthLayout() {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <>
       <Navbar />

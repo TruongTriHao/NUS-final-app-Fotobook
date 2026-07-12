@@ -59,11 +59,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: (
-      <ProtectedLayout requireAdmin>
-        <AdminLayout />
-      </ProtectedLayout>
-    ),
+    element: <AdminLayout />,
     children: [
       { index: true, element: <Navigate to="photos" replace /> },
       { path: "photos", element: <ManagePhotosPage /> },

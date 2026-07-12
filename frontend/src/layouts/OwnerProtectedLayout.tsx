@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
+import { Alert } from "../components/ui/Alert";
 import { useAuth } from "../hooks/useAuth";
 import { albumService } from "../services/albumService";
 import { photoService } from "../services/photoService";
@@ -45,10 +46,10 @@ export function OwnerProtectedLayout({
   }, [id, type]);
 
   if (error) {
-    return <div>{error}</div>;
+    return <Alert message={error} />;
   }
 
-  if (!content || (content.user !== user?.id && user?.role !== "admin")) {
+  if (!content || (content.ownerId !== user?.id && user?.role !== "admin")) {
     return <Navigate to="/not-found" replace />;
   }
 
