@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 
 export function ProfileButton({
   isCurrentUser,
-  isFollowee: isFollowee,
+  isFollowee,
   className,
 }: {
   isCurrentUser: boolean;
