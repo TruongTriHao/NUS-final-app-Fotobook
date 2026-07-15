@@ -7,7 +7,7 @@ export function ProfileTabButtons({
   amount: number;
   label: string;
   active: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }) {
   const activeStyle = "text-indigo-800 text-xs md:text-lg font-bold p-1 md:p-2";
   const inactiveStyle =
