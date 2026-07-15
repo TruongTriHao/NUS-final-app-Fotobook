@@ -21,7 +21,11 @@ export function AlbumTabCard({
       <div className="flex flex-col m-2 md:m-4 w-25 md:w-40">
         <div className="relative h-25 md:h-40">
           <Album
-            src={[album.images[0], album.images[1], album.images[2]]}
+            src={[
+              album.images[0],
+              album.images[1] ?? null,
+              album.images[2] ?? null,
+            ]}
             alt={album.title}
             onClick={() => {
               setIsModalOpen(true);

@@ -12,7 +12,11 @@ export function AdminAlbumCard({ album }: { album: AlbumType }) {
     <>
       <div className="relative w-full aspect-square my-2 md:my-4">
         <Album
-          src={[album.images[0], album.images[1], album.images[2]]}
+          src={[
+            album.images[0],
+            album.images[1] ?? null,
+            album.images[2] ?? null,
+          ]}
           alt={album.title}
           onClick={() => {
             setIsModalOpen(true);
