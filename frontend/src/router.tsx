@@ -7,6 +7,7 @@ import { RootLayout } from "./layouts/RootLayout";
 import { DiscoverPage } from "./pages/DiscoverPage";
 import { EditAlbumPage } from "./pages/EditAlbumPage";
 import { EditPhotoPage } from "./pages/EditPhotoPage";
+import { EditProfileAdminPage } from "./pages/EditProfileAdminPage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import { FeedsPage } from "./pages/FeedsPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
       { path: "photos", element: <ManagePhotosPage /> },
       { path: "albums", element: <ManageAlbumsPage /> },
       { path: "users", element: <ManageUsersPage /> },
+      { path: "users/:id/edit", element: <EditProfileAdminPage /> },
     ],
   },
   {
