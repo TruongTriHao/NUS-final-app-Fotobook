@@ -12,7 +12,7 @@ export function SignUpForm() {
     >
       <div className="flex flex-col mx-4 md:mx-8">
         <InputField
-          className="mt-4.5 md:mt-9 mx-2 md:mx-4"
+          labelClassName="mt-4.5 md:mt-9 mx-2 md:mx-4"
           label="First Name"
           htmlFor="firstName"
         >

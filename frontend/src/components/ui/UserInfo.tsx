@@ -1,39 +1,29 @@
+import type { User } from "../../types/User";
 import { cn } from "../../utils/cn";
-import { Photo } from "./Photo";
+import { Avatar } from "./Avatar";
 
 export function UserInfo({
-  firstName,
-  lastName,
-  avatarUrl,
+  user,
   outerClassName,
-  defaultAvatarClassName,
+  avatarClassName,
   nameClassName,
+  to = "/me",
 }: {
-  firstName: string;
-  lastName: string;
-  avatarUrl?: string;
+  user: User | null;
   outerClassName?: string;
-  defaultAvatarClassName?: string;
+  avatarClassName?: string;
   nameClassName?: string;
+  to?: string;
 }) {
   return (
     <div className={cn("flex items-center gap-1", outerClassName)}>
-      {avatarUrl ? (
-        <Photo
-          className="rounded-full w-8 h-8"
-          src={avatarUrl}
-          alt={`${firstName} ${lastName}'s avatar`}
-        />
-      ) : (
-        <div
-          className={cn("rounded-full p-2 font-bold", defaultAvatarClassName)}
-        >
-          {firstName.charAt(0)}
-          {lastName.charAt(0)}
-        </div>
-      )}
+      <Avatar
+        user={user}
+        defaultClassName={cn("p-2", avatarClassName)}
+        to={to}
+      />
       <div className={cn("p-2", nameClassName)}>
-        {firstName} {lastName}
+        {user?.firstName} {user?.lastName}
       </div>
     </div>
   );

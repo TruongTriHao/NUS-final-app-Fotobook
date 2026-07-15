@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type Album = {
   id: string;
   title: string;
@@ -6,5 +8,7 @@ export type Album = {
   createdAt: string;
   likeCount: number;
   mode: "public" | "private";
-  user: string;
+  ownerId: string;
 };
+
+export type AlbumWithUser = Album & { owner: User };

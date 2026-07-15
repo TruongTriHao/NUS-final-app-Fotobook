@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type Photo = {
   id: string;
   title: string;
@@ -6,5 +8,7 @@ export type Photo = {
   createdAt: string;
   likeCount: number;
   mode: "public" | "private";
-  user: string;
+  ownerId: string;
 };
+
+export type PhotoWithUser = Photo & { owner: User };

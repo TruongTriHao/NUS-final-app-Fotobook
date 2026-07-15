@@ -5,4 +5,15 @@ export type User = {
   email: string;
   role: "user" | "admin";
   avatarUrl?: string | null;
+  lastLogin?: string | null;
+  isActive: boolean;
+};
+
+export type ProfileData = User & {
+  isCurrentUser: boolean;
+  isFollowee: boolean;
+  numPhotos: number;
+  numAlbums: number;
+  numFollowers: number;
+  numFollowees: number;
 };

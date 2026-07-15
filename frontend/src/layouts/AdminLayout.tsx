@@ -1,8 +1,19 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Navbar } from "../components/common/Navbar";
 import { Sidebar } from "../components/common/Sidebar";
+import { useAuth } from "../hooks/useAuth";
 
 export function AdminLayout() {
+  const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <>
       <Navbar />
