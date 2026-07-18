@@ -13,7 +13,7 @@ export function EditButton({
   return (
     <Link
       className={cn(
-        "absolute bottom-0 right-0 text-white font-bold text-xs md:text-sm rounded-full bg-black/40 hover:opacity-30 p-0.5 md:p-1",
+        "text-white font-bold text-xs md:text-sm rounded-full bg-black/40 hover:opacity-30 p-0.5 md:p-1",
         className,
       )}
       to={to}

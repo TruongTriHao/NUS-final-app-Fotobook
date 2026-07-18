@@ -30,7 +30,12 @@ export function PhotoTabCard({
           {photo.mode === "private" && (
             <Lock className="absolute bg-white/80 rounded-full p-1 right-0 top-0" />
           )}
-          {isCurrentUser && <EditButton to={`/photos/${photo.id}/edit`} />}
+          {isCurrentUser && (
+            <EditButton
+              to={`/photos/${photo.id}/edit`}
+              className="absolute bottom-0 right-0"
+            />
+          )}
         </div>
         <ProfileTitle title={photo.title} />
       </div>

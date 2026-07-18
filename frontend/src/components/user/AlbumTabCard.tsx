@@ -45,7 +45,7 @@ export function AlbumTabCard({
           )}
           {isCurrentUser && (
             <EditButton
-              className="bottom-1 right-1 z-30"
+              className="absolute bottom-1 right-1 z-30"
               to={`/albums/${album.id}/edit`}
             />
           )}
