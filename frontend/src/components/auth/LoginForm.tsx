@@ -1,6 +1,6 @@
 import { LogIn } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { authService } from "../../services/authService";
 import { Alert } from "../ui/Alert";
@@ -12,7 +12,6 @@ import { SocialLogin } from "./SocialLogin";
 
 export function LoginForm() {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,9 +30,6 @@ export function LoginForm() {
         return;
       }
       login(user);
-      void navigate(user.role === "admin" ? "/admin/photos" : "/feeds", {
-        replace: true,
-      });
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Failed to login. Please try again.",

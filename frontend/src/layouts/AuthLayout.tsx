@@ -3,10 +3,12 @@ import { Navbar } from "../components/common/Navbar";
 import { useAuth } from "../hooks/useAuth";
 
 export function AuthLayout() {
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+  if (user) {
+    return (
+      <Navigate to={user.role === "admin" ? "/admin" : "/feeds"} replace />
+    );
   }
 
   return (
