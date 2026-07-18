@@ -30,7 +30,7 @@ export function ManageUsersPage() {
         }
       } catch (e) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching albums");
+          setError(e instanceof Error ? e.message : "Error fetching users");
         }
       } finally {
         if (isMounted) {
