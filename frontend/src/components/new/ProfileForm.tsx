@@ -70,7 +70,7 @@ export function ProfileForm({ initial }: { initial: User }) {
         </div>
       </form>
       <form
-        className="flex flex-col items-center my-5 md:my-10"
+        className="flex flex-col items-center"
         onSubmit={(e) => {
           e.preventDefault();
         }}
