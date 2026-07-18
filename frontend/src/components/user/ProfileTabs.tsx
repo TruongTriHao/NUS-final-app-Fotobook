@@ -31,7 +31,7 @@ export function ProfileTabs({ profile }: { profile: ProfileData }) {
           }}
         />
         <ProfileTabButtons
-          amount={profile.numFollowers}
+          amount={profile.numFollowees}
           label="FOLLOWINGS"
           active={activeTab === "followings"}
           onClick={() => {
@@ -39,7 +39,7 @@ export function ProfileTabs({ profile }: { profile: ProfileData }) {
           }}
         />
         <ProfileTabButtons
-          amount={profile.numFollowees}
+          amount={profile.numFollowers}
           label="FOLLOWERS"
           active={activeTab === "followers"}
           onClick={() => {
