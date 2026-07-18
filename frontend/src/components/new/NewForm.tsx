@@ -48,7 +48,11 @@ export function NewForm({
             outerClassName="my-1.25 md:my-2.5"
             labelClassName="my-1 md:my-2"
           >
-            <DropdownChoice initial={initial?.mode} />
+            <DropdownChoice
+              id="sharingMode"
+              name="sharingMode"
+              initial={initial?.mode}
+            />
           </InputField>
         </div>
         <InputField
