@@ -3,11 +3,14 @@ import { useRef, useState } from "react";
 import type { Album } from "../../types/Album";
 import { Photo } from "./Photo";
 
-type SelectedPhoto = {
-  id: string;
-  file: File;
-  previewUrl: string;
-};
+type SelectedPhoto =
+  | { type: "existing"; id: string; url: string }
+  | {
+      type: "new";
+      id: string;
+      file: File;
+      previewUrl: string;
+    };
 
 export function AlbumInput({
   id,
@@ -21,9 +24,9 @@ export function AlbumInput({
   const [photos, setPhotos] = useState<SelectedPhoto[]>(
     initial
       ? initial.images.map((image) => ({
+          type: "existing",
           id: crypto.randomUUID(),
-          file: new File([], image),
-          previewUrl: image,
+          url: image,
         }))
       : [],
   );
@@ -36,6 +39,7 @@ export function AlbumInput({
     if (!files) return;
     const newFiles = Array.from(files);
     const newPhotos: SelectedPhoto[] = newFiles.map((file) => ({
+      type: "new",
       id: crypto.randomUUID(),
       file,
       previewUrl: URL.createObjectURL(file),
@@ -48,7 +52,7 @@ export function AlbumInput({
 
   const handleDelete = (id: string) => {
     const photoToDelete = photos.find((p) => p.id === id);
-    if (photoToDelete) {
+    if (photoToDelete && photoToDelete.type === "new") {
       URL.revokeObjectURL(photoToDelete.previewUrl);
     }
     setPhotos((prev) => prev.filter((p) => p.id !== id));
@@ -58,7 +62,10 @@ export function AlbumInput({
     <div className="flex flex-wrap gap-4 mx-2 md:mx-4 my-1.25 md:my-2.5">
       {photos.map((photo) => (
         <div key={photo.id} className="relative w-16 md:w-32">
-          <Photo src={photo.previewUrl} alt="Album Photo" />
+          <Photo
+            src={photo.type === "existing" ? photo.url : photo.previewUrl}
+            alt="Album Photo"
+          />
           <X
             onClick={() => {
               handleDelete(photo.id);
