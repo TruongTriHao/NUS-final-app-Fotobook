@@ -4,12 +4,14 @@ import { cn } from "../../utils/cn";
 export function ProfileButton({
   isCurrentUser,
   isFollowee,
-  onClick,
+  followOnClick,
+  unfollowOnClick,
   className,
 }: {
   isCurrentUser: boolean;
   isFollowee: boolean;
-  onClick?: () => void;
+  followOnClick?: () => void;
+  unfollowOnClick?: () => void;
   className?: string;
 }) {
   if (isCurrentUser) {
@@ -28,7 +30,7 @@ export function ProfileButton({
   if (isFollowee) {
     return (
       <button
-        onClick={onClick}
+        onClick={unfollowOnClick}
         className={cn(
           "text-white bg-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base",
           className,
@@ -40,7 +42,7 @@ export function ProfileButton({
   }
   return (
     <button
-      onClick={onClick}
+      onClick={followOnClick}
       className={cn(
         "text-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base",
         className,
