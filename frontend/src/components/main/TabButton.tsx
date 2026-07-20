@@ -5,7 +5,7 @@ export function TabButton({
 }: {
   label: string;
   active: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }) {
   const activeStyle =
     "text-white bg-indigo-800 font-bold border-2 border-indigo-800 rounded-xs p-2 text-xs md:text-base";

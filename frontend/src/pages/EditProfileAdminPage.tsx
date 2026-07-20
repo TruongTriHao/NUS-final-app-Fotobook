@@ -1,32 +1,31 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { NewForm } from "../components/new/NewForm";
+import { EditProfileAdminForm } from "../components/admin/EditProfileAdminForm";
 import { Alert } from "../components/ui/Alert";
 import { Loading } from "../components/ui/Loading";
 import { NewTitle } from "../components/ui/NewTitle";
-import { PhotoInput } from "../components/ui/PhotoInput";
-import { photoService } from "../services/photoService";
-import type { Photo } from "../types/Photo";
+import { userService } from "../services/userService";
+import type { User } from "../types/User";
 
-export function EditPhotoPage() {
+export function EditProfileAdminPage() {
   const id = useParams().id as string;
-  const [photo, setPhoto] = useState<Photo | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    const fetchPhoto = async () => {
+    const fetchUser = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await photoService.getPhotoById(id);
+        const data = await userService.getUserById(id);
         if (isMounted) {
-          setPhoto(data);
+          setUser(data);
         }
       } catch (e) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching photo");
+          setError(e instanceof Error ? e.message : "Error fetching user");
         }
       } finally {
         if (isMounted) {
@@ -35,7 +34,7 @@ export function EditPhotoPage() {
       }
     };
 
-    void fetchPhoto();
+    void fetchUser();
 
     return () => {
       isMounted = false;
@@ -50,16 +49,14 @@ export function EditPhotoPage() {
     return <Alert message={error} />;
   }
 
-  if (!photo) {
-    return <Alert message="Photo not found." />;
+  if (!user) {
+    return <Alert message="User not found." />;
   }
 
   return (
     <>
-      <NewTitle>Edit Photo</NewTitle>
-      <NewForm type="photo" initial={photo} editMode>
-        <PhotoInput initial={photo.imageUrl} name="photo" />
-      </NewForm>
+      <NewTitle>Edit User Profile</NewTitle>
+      <EditProfileAdminForm initial={user} />
     </>
   );
 }

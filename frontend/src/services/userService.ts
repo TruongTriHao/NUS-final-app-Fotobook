@@ -46,10 +46,10 @@ export const userService = {
         (isCurrentUser || album.mode === "public"),
     ).length;
     const numFollowers = follows.filter(
-      (follow) => follow.followerId === activeId,
+      (follow) => follow.followeeId === activeId,
     ).length;
     const numFollowees = follows.filter(
-      (follow) => follow.followeeId === activeId,
+      (follow) => follow.followerId === activeId,
     ).length;
     return {
       ...user,
