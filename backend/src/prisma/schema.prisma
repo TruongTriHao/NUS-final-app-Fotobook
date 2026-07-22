@@ -1,13 +1,136 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  importFileExtension = "ts"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  user
+  admin
+}
+
+enum Visibility {
+  public
+  private
+}
+
+model User {
+  id String @id @default(cuid())
+
+  firstName String @db.VarChar(25)
+  lastName  String @db.VarChar(25)
+
+  email    String @unique @db.VarChar(255)
+  password String
+
+  avatarUrl String?
+
+  role Role @default(user)
+
+  lastLogin  DateTime? @db.Timestamptz
+  isActive   Boolean   @default(true)
+  isVerified Boolean   @default(false)
+
+  photos Photo[]
+  albums Album[]
+
+  photoLikes PhotoLike[]
+  albumLikes AlbumLike[]
+
+  followers Follow[] @relation("Followers")
+  followees Follow[] @relation("Followees")
+}
+
+model Photo {
+  id String @id @default(cuid())
+
+  title       String @db.VarChar(140)
+  description String @db.VarChar(300)
+
+  imageUrl String
+
+  mode Visibility @default(public)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  likes PhotoLike[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  @@index([ownerId])
+}
+
+model Album {
+  id String @id @default(cuid())
+
+  title       String @db.VarChar(140)
+  description String @db.VarChar(300)
+
+  mode Visibility @default(public)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  images String[]
+
+  likes AlbumLike[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  @@index([ownerId])
+}
+
+model Follow {
+  followerId String
+  followeeId String
+
+  follower User @relation("Followees", fields: [followerId], references: [id], onDelete: Cascade)
+  followee User @relation("Followers", fields: [followeeId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followeeId])
+  @@index([followeeId])
+}
+
+model PhotoLike {
+  userId  String
+  photoId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, photoId])
+  @@index([photoId])
+}
+
+model AlbumLike {
+  userId  String
+  albumId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@id([userId, albumId])
+  @@index([albumId])
+}
+
+// model AlbumImage {
+//   id String @id @default(cuid())
+
+//   imageUrl String
+
+//   order Int @default(0)
+
+//   albumId String
+//   album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now()) @db.Timestamptz
+
+//   @@index([albumId])
+// }
