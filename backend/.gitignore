@@ -22,6 +22,7 @@ yarn-error.log*
 # Prisma
 prisma/dev.db
 prisma/dev.db-journal
+src/generated/
 
 # Uploads
 uploads/
@@ -49,5 +50,3 @@ temp/
 
 # ESLint cache
 .eslintcache
-
-/src/generated/prisma

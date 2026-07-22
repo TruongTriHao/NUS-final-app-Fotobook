@@ -6,9 +6,9 @@ import tseslint from "typescript-eslint";
 export default defineConfig([
   globalIgnores([
     "dist",
-    "prisma/generated",
     "prisma.config.ts",
     "eslint.config.mjs",
+    "src/prisma/seed.js",
   ]),
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
@@ -20,6 +20,12 @@ export default defineConfig([
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+      ],
     },
   },
 ]);
