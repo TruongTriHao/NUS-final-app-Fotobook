@@ -48,10 +48,23 @@ export function generateEmailVerifyToken(userId: string): string {
   });
 }
 
-export function generatePasswordResetToken(userId: string): string {
-  return jwt.sign({ sub: userId }, JWT_PASSWORD_RESET_SECRET, {
+export function generatePasswordResetToken(
+  userId: string,
+  hashedPassword: string,
+): string {
+  return jwt.sign({ sub: userId }, JWT_PASSWORD_RESET_SECRET + hashedPassword, {
     expiresIn: JWT_PASSWORD_RESET_EXPIRES_IN as jwt.SignOptions["expiresIn"],
   });
+}
+
+export function decodeUnverifiedResetToken(
+  token: string,
+): { sub: string } | null {
+  try {
+    return jwt.decode(token) as { sub: string } | null;
+  } catch {
+    return null;
+  }
 }
 
 // export function verifyToken(token: string): JwtPayload | null {
@@ -84,14 +97,15 @@ export function verifyEmailTokenIgnoreExpiration(token: string): string | null {
   }
 }
 
-export function verifyPasswordResetToken(token: string): string | null {
+export function verifyPasswordResetToken(
+  token: string,
+  hashedPassword: string,
+): boolean {
   try {
-    const decoded = jwt.verify(token, JWT_PASSWORD_RESET_SECRET) as {
-      sub: string;
-    };
-    return decoded.sub;
+    jwt.verify(token, JWT_PASSWORD_RESET_SECRET + hashedPassword);
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }
 

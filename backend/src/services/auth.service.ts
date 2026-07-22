@@ -2,6 +2,7 @@ import { UserRepository } from "../repositories/user.repository";
 import { AppError } from "../utils/AppError";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email";
 import {
+  decodeUnverifiedResetToken,
   generateEmailVerifyToken,
   generatePasswordResetToken,
   generateToken,
@@ -103,16 +104,16 @@ export class AuthService {
     if (!user || !user.isActive || !user.isVerified) {
       return;
     }
-    const token = generatePasswordResetToken(user.id);
+    const token = generatePasswordResetToken(user.id, user.password);
     void sendPasswordResetEmail(user.email, token);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const userId = verifyPasswordResetToken(token);
-    if (!userId) {
+    const decoded = decodeUnverifiedResetToken(token);
+    if (!decoded || !decoded.sub) {
       throw new AppError("Invalid or expired password reset token", 401);
     }
-    const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(decoded.sub);
     if (!user) {
       throw new AppError("User not found", 404);
     }
@@ -122,7 +123,11 @@ export class AuthService {
         403,
       );
     }
+    const isValid = verifyPasswordResetToken(token, user.password);
+    if (!isValid) {
+      throw new AppError("Invalid or expired password reset token", 401);
+    }
     const hashedPassword = await hashPassword(newPassword);
-    await this.userRepository.update(userId, { password: hashedPassword });
+    await this.userRepository.update(user.id, { password: hashedPassword });
   }
 }
