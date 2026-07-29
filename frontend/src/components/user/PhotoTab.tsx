@@ -28,11 +28,9 @@ export function PhotoTab({
         setLoading(true);
         const {
           data: { photos },
-          message,
         } = await photoService.getPhotosByUserId(id);
         if (isMounted) {
           setPhotos(photos);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {
