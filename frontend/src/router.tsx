@@ -10,6 +10,7 @@ import { EditPhotoPage } from "./pages/EditPhotoPage";
 import { EditProfileAdminPage } from "./pages/EditProfileAdminPage";
 import { EditProfilePage } from "./pages/EditProfilePage";
 import { FeedsPage } from "./pages/FeedsPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ManageAlbumsPage } from "./pages/ManageAlbumsPage";
 import { ManagePhotosPage } from "./pages/ManagePhotosPage";
@@ -17,8 +18,10 @@ import { ManageUsersPage } from "./pages/ManageUsersPage";
 import { NewAlbumPage } from "./pages/NewAlbumPage";
 import { NewPhotoPage } from "./pages/NewPhotoPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { PasswordResetPage } from "./pages/PasswordResetPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SignUpPage } from "./pages/SignUpPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +37,7 @@ export const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           { path: "/feeds", element: <FeedsPage /> },
-          { path: "/me", element: <ProfilePage /> },
+          { path: "/profile/me", element: <ProfilePage /> },
           { path: "/profile/edit", element: <EditProfilePage /> },
           { path: "/photos/new", element: <NewPhotoPage /> },
           {
@@ -80,6 +83,9 @@ export const router = createBrowserRouter([
         path: "/signup",
         element: <SignUpPage />,
       },
+      { path: "/verify-email/:token", element: <VerifyEmailPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/reset-password/:token", element: <PasswordResetPage /> },
     ],
   },
   {

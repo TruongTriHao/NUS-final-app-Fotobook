@@ -1,67 +1,101 @@
-import albums from "../mocks/albums.json";
-import follows from "../mocks/follows.json";
-import users from "../mocks/users.json";
-import type { Album, AlbumWithUser } from "../types/Album";
-import type { User } from "../types/User";
+import type { Album, AlbumWithOwner } from "../types/Album";
+import type { ApiResponse } from "../types/api";
+import { apiClient } from "./apiClient";
 
-// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const albumService = {
-  getAllAlbums: async (page: number, limit: number): Promise<Album[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    return (albums as Album[]).slice(startIndex, endIndex);
+  createAlbum: async (formData: FormData): Promise<ApiResponse<null>> => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      "/albums",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
   },
-  getAllCount: async (): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (albums as Album[]).length;
-  },
+
   getAlbumsForMain: async (
-    type: "feeds" | "discover",
-    userId: string,
-  ): Promise<AlbumWithUser[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const followees = follows
-      .filter((follow) => follow.followerId === userId)
-      .map((follow) => follow.followeeId);
-    const albumResult = albums.filter(
-      (album) =>
-        (type === "discover" || followees.includes(album.ownerId)) &&
-        album.mode === "public",
-    ) as Album[];
-
-    albumResult.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-
-    const userIds = albumResult.map(
-      (a) => (users as User[]).find((user) => user.id === a.ownerId) ?? null,
-    );
-    const result: AlbumWithUser[] = albumResult
-      .map((album, index) => ({ ...album, owner: userIds[index] }))
-      .filter((album) => album.owner !== null) as AlbumWithUser[];
-
-    return result;
+    type: "feed" | "discover",
+    cursor: string | null,
+    limit: number = 20,
+  ): Promise<
+    ApiResponse<{ albums: AlbumWithOwner[]; nextCursor: string | null }>
+  > => {
+    const response = await apiClient.get<
+      ApiResponse<{ albums: AlbumWithOwner[]; nextCursor: string | null }>
+    >(`/main/${type}/albums`, {
+      params: { cursor, limit },
+    });
+    return response.data;
   },
+
+  updateAlbum: async (
+    id: string,
+    formData: FormData,
+  ): Promise<ApiResponse<null>> => {
+    const response = await apiClient.patch<ApiResponse<null>>(
+      `/albums/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
+  },
+
+  likeAlbum: async (id: string): Promise<ApiResponse<{ like: boolean }>> => {
+    const response = await apiClient.post<ApiResponse<{ like: boolean }>>(
+      `/albums/${id}/like`,
+    );
+    return response.data;
+  },
+
+  unlikeAlbum: async (id: string): Promise<ApiResponse<{ like: boolean }>> => {
+    const response = await apiClient.delete<ApiResponse<{ like: boolean }>>(
+      `/albums/${id}/like`,
+    );
+    return response.data;
+  },
+
+  getAlbums: async (
+    page: number,
+    limit: number,
+  ): Promise<ApiResponse<{ albums: Album[]; total: number }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{ albums: Album[]; total: number }>
+    >("/admin/albums", {
+      params: { page, limit },
+    });
+    return response.data;
+  },
+
   getAlbumsByUserId: async (
     userId: string,
-    isCurrentUser: boolean,
-  ): Promise<Album[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return albums
-      .filter(
-        (album) =>
-          album.ownerId === userId &&
-          (isCurrentUser || album.mode === "public"),
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ) as Album[];
+  ): Promise<ApiResponse<{ albums: Album[] }>> => {
+    const response = await apiClient.get<ApiResponse<{ albums: Album[] }>>(
+      `/users/${userId}/albums`,
+      {
+        params: { id: userId },
+      },
+    );
+    return response.data;
   },
-  getAlbumById: async (id: string): Promise<Album | null> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (albums as Album[]).find((album) => album.id === id) || null;
+
+  getAlbumById: async (
+    id: string,
+  ): Promise<ApiResponse<{ content: Album }>> => {
+    const response = await apiClient.get<ApiResponse<{ content: Album }>>(
+      `/albums/${id}`,
+    );
+    return response.data;
+  },
+
+  deleteAlbum: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await apiClient.delete<ApiResponse<null>>(`/albums/${id}`);
+    return response.data;
   },
 };

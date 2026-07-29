@@ -7,7 +7,7 @@ export function UserInfo({
   outerClassName,
   avatarClassName,
   nameClassName,
-  to = "/me",
+  to = "/profile/me",
 }: {
   user: User | null;
   outerClassName?: string;

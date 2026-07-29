@@ -6,10 +6,14 @@ export function PhotoInput({
   initial = null,
   id,
   name,
+  onDelete,
+  required,
 }: {
   initial?: string | null;
   id?: string;
   name?: string;
+  onDelete?: () => void;
+  required?: boolean;
 }) {
   const [photo, setPhoto] = useState<string | null>(initial);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,6 +37,7 @@ export function PhotoInput({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    onDelete?.();
   };
 
   return (
@@ -42,9 +47,10 @@ export function PhotoInput({
         name={name}
         type="file"
         accept="image/*"
-        className="hidden"
+        className="sr-only"
         ref={fileInputRef}
         onChange={handleImageChange}
+        required={required}
       />
       {photo ? (
         <div className="relative">

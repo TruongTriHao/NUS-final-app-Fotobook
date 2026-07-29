@@ -6,9 +6,12 @@ export type Photo = {
   description: string;
   imageUrl: string;
   createdAt: string;
+  updatedAt: string;
   likeCount: number;
   mode: "public" | "private";
   ownerId: string;
 };
 
-export type PhotoWithUser = Photo & { owner: User };
+export type PhotoWithOwner = Photo & { isLiked: boolean } & {
+  owner: User & { isFollowee: boolean };
+};

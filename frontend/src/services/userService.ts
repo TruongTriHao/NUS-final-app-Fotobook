@@ -1,64 +1,95 @@
-import albums from "../mocks/albums.json";
-import follows from "../mocks/follows.json";
-import photos from "../mocks/photos.json";
-import users from "../mocks/users.json";
-import type { ProfileData, User } from "../types/User";
+import type { ApiResponse } from "../types/api";
+import type { AdminUserData, ProfileData, User } from "../types/User";
+import { apiClient } from "./apiClient";
 
-// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const userService = {
-  getAllUsers: async (page: number, limit: number): Promise<User[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    return (users as User[]).slice(startIndex, endIndex);
+  followUser: async (
+    userId: string,
+  ): Promise<ApiResponse<{ follow: boolean }>> => {
+    const response = await apiClient.post<ApiResponse<{ follow: boolean }>>(
+      `/users/${userId}/follow`,
+    );
+    return response.data;
   },
-  getAllCount: async (): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (users as User[]).length;
+
+  getUsers: async (
+    page: number,
+    limit: number,
+  ): Promise<ApiResponse<{ users: AdminUserData[]; total: number }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{ users: AdminUserData[]; total: number }>
+    >("/admin/users", {
+      params: { page, limit },
+    });
+    return response.data;
   },
-  getUserById: async (id: string): Promise<User | null> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (users as User[]).find((user) => user.id === id) || null;
+
+  getUserById: async (
+    id: string,
+  ): Promise<ApiResponse<{ user: AdminUserData }>> => {
+    const response = await apiClient.get<ApiResponse<{ user: AdminUserData }>>(
+      `/admin/users/${id}`,
+    );
+    return response.data;
   },
-  // Mock to use later in ProfilePage
+
   getProfileData: async (
     currentId: string,
     activeId: string,
-  ): Promise<ProfileData | null> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const user = (users as User[]).find((user) => user.id === activeId);
-    if (!user) {
-      return null;
-    }
-    const isCurrentUser = currentId === activeId;
-    const isFollowee = follows.some(
-      (follow) =>
-        follow.followerId === currentId && follow.followeeId === activeId,
+  ): Promise<ApiResponse<{ user: ProfileData }>> => {
+    const response =
+      currentId === activeId
+        ? await apiClient.get<ApiResponse<{ user: ProfileData }>>("/users/me")
+        : await apiClient.get<ApiResponse<{ user: ProfileData }>>(
+            `/users/${activeId}`,
+          );
+    return response.data;
+  },
+
+  updateProfile: async (
+    formData: FormData,
+  ): Promise<ApiResponse<{ user: User }>> => {
+    const response = await apiClient.patch<ApiResponse<{ user: User }>>(
+      "/users/me",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
     );
-    const numPhotos = photos.filter(
-      (photo) =>
-        photo.ownerId === activeId &&
-        (isCurrentUser || photo.mode === "public"),
-    ).length;
-    const numAlbums = albums.filter(
-      (album) =>
-        album.ownerId === activeId &&
-        (isCurrentUser || album.mode === "public"),
-    ).length;
-    const numFollowers = follows.filter(
-      (follow) => follow.followeeId === activeId,
-    ).length;
-    const numFollowees = follows.filter(
-      (follow) => follow.followerId === activeId,
-    ).length;
-    return {
-      ...user,
-      isCurrentUser,
-      isFollowee,
-      numPhotos,
-      numAlbums,
-      numFollowers,
-      numFollowees,
-    };
+    return response.data;
+  },
+
+  updateAdminUser: async (
+    userId: string,
+    formData: FormData,
+  ): Promise<ApiResponse<null>> => {
+    const response = await apiClient.patch<ApiResponse<null>>(
+      `/admin/users/${userId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
+  },
+
+  deleteUser: async (userId: string): Promise<ApiResponse<null>> => {
+    const response = await apiClient.delete<ApiResponse<null>>(
+      `/admin/users/${userId}`,
+    );
+    return response.data;
+  },
+
+  unfollowUser: async (
+    userId: string,
+  ): Promise<ApiResponse<{ follow: boolean }>> => {
+    const response = await apiClient.delete<ApiResponse<{ follow: boolean }>>(
+      `/users/${userId}/follow`,
+    );
+    return response.data;
   },
 };

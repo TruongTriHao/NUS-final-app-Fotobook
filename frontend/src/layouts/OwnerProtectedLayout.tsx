@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { Alert } from "../components/ui/Alert";
+import { toast } from "sonner";
 import { Loading } from "../components/ui/Loading";
 import { useAuth } from "../hooks/useAuth";
 import { albumService } from "../services/albumService";
 import { photoService } from "../services/photoService";
 import type { Album } from "../types/Album";
 import type { Photo } from "../types/Photo";
+import type { ApiErrorResponse } from "../types/api";
 
 export function OwnerProtectedLayout({
   type,
@@ -19,24 +20,26 @@ export function OwnerProtectedLayout({
   const id = useParams().id as string;
   const [content, setContent] = useState<Photo | Album | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchContent = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data =
+        const {
+          data: { content },
+        } =
           type === "photo"
             ? await photoService.getPhotoById(id)
             : await albumService.getAlbumById(id);
         if (isMounted) {
-          setContent(data);
+          setContent(content);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching content");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch content.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -54,10 +57,6 @@ export function OwnerProtectedLayout({
 
   if (loading) {
     return <Loading />;
-  }
-
-  if (error) {
-    return <Alert message={error} />;
   }
 
   if (!content || (content.ownerId !== user?.id && user?.role !== "admin")) {

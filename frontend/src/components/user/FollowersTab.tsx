@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { followService } from "../../services/followService";
+import type { ApiErrorResponse } from "../../types/api";
 import type { ProfileData } from "../../types/User";
-import { Alert } from "../ui/Alert";
 import { Loading } from "../ui/Loading";
+import { NotFoundMessage } from "../ui/NotFoundMessage";
 import { ProfileCard } from "./ProfileCard";
 import { ProfileGrid } from "./ProfileGrid";
 
-export function FollowersTab({ id }: { id: string }) {
+export function FollowersTab({
+  id,
+  onFollowChange,
+}: {
+  id: string;
+  onFollowChange?: (change: number) => void;
+}) {
   const [followers, setFollowers] = useState<ProfileData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchFollowers = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await followService.getFollowersProfileData(id);
+        const {
+          data: { followers },
+          message,
+        } = await followService.getFollowersProfileData(id);
         if (isMounted) {
-          setFollowers(data);
+          setFollowers(followers);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching followers");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch followers.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -43,18 +55,18 @@ export function FollowersTab({ id }: { id: string }) {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (followers.length === 0) {
-    return <div>No followers found.</div>;
+    return <NotFoundMessage itemType="followers" />;
   }
 
   return (
     <ProfileGrid>
       {followers.map((follower) => (
-        <ProfileCard key={follower.id} profile={follower} />
+        <ProfileCard
+          key={follower.id}
+          profile={follower}
+          onFollowChange={onFollowChange}
+        />
       ))}
     </ProfileGrid>
   );

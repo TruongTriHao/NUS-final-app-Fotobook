@@ -35,10 +35,10 @@ export function validate(schema: Schema): RequestHandler {
         req.body = result.data.body;
       }
       if (schema.query) {
-        req.query = result.data.query as Request["query"];
+        req.validatedQuery = result.data.query;
       }
       if (schema.params) {
-        req.params = result.data.params as Request["params"];
+        req.validatedParams = result.data.params;
       }
 
       next();

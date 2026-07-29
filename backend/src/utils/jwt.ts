@@ -67,14 +67,6 @@ export function decodeUnverifiedResetToken(
   }
 }
 
-// export function verifyToken(token: string): JwtPayload | null {
-//   try {
-//     return jwt.verify(token, JWT_SECRET) as JwtPayload;
-//   } catch {
-//     return null;
-//   }
-// }
-
 export function verifyEmailToken(token: string): string | null {
   try {
     const decoded = jwt.verify(token, JWT_EMAIL_VERIFY_SECRET) as {

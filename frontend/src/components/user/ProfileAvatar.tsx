@@ -5,7 +5,7 @@ import { Avatar } from "../ui/Avatar";
 export function ProfileAvatar({
   user,
   className,
-  to = "/me",
+  to = "/profile/me",
 }: {
   user: User | null;
   className?: string;

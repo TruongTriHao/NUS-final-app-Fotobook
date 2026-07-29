@@ -5,7 +5,7 @@ import { TabButton } from "./TabButton";
 
 type ActiveTab = "photo" | "album";
 
-export function Tabs({ type }: { type: "feeds" | "discover" }) {
+export function Tabs({ type }: { type: "feed" | "discover" }) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("photo");
 
   return (

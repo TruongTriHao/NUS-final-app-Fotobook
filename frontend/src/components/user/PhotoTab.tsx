@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { photoService } from "../../services/photoService";
+import type { ApiErrorResponse } from "../../types/api";
 import type { Photo as PhotoType } from "../../types/Photo";
-import { Alert } from "../ui/Alert";
 import { Loading } from "../ui/Loading";
+import { NotFoundMessage } from "../ui/NotFoundMessage";
 import { AddButton } from "./AddButton";
 import { PhotoTabCard } from "./PhotoTabCard";
 import { ProfileGrid } from "./ProfileGrid";
@@ -18,21 +20,25 @@ export function PhotoTab({
   const navigate = useNavigate();
   const [photos, setPhotos] = useState<PhotoType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await photoService.getPhotosByUserId(id, isCurrentUser);
+        const {
+          data: { photos },
+          message,
+        } = await photoService.getPhotosByUserId(id);
         if (isMounted) {
-          setPhotos(data);
+          setPhotos(photos);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching photos");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch photos.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -52,12 +58,18 @@ export function PhotoTab({
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (photos.length === 0) {
-    return <div>No photos found.</div>;
+    return (
+      <>
+        {isCurrentUser && (
+          <AddButton
+            text="Add Photo"
+            onClick={() => void navigate("/photos/new")}
+          />
+        )}
+        <NotFoundMessage itemType="photos" />
+      </>
+    );
   }
 
   return (

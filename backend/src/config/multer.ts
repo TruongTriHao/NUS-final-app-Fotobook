@@ -1,36 +1,8 @@
 import type { Request } from "express";
-import fs from "fs";
 import multer, { type FileFilterCallback } from "multer";
-import path from "path";
 import { AppError } from "../utils/AppError";
-import {
-  uploadTypeSchema,
-  type UploadType,
-} from "../validators/user.validator";
 
-type TypeBody = {
-  type?: UploadType;
-  [key: string]: unknown;
-};
-
-const storage = multer.diskStorage({
-  destination: (req, _file, cb) => {
-    const result = uploadTypeSchema.safeParse((req.body as TypeBody).type);
-    const type = result.success ? result.data : "photos";
-    const uploadPath = path.join(process.cwd(), "uploads", type);
-
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    cb(null, uploadPath);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now().toString()}-${Math.round(Math.random() * 1e9).toString()}`;
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (
   _req: Request,

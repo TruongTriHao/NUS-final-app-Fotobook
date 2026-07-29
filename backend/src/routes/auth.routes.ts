@@ -1,6 +1,6 @@
 import express from "express";
 import { AuthController } from "../controllers/auth.controller";
-import { requireAuth } from "../middlewares/requireAuth";
+import { requireAuth } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { UserRepository } from "../repositories/user.repository";
 import { AuthService } from "../services/auth.service";

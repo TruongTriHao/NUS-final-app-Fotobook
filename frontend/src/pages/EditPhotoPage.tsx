@@ -1,32 +1,37 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { NewForm } from "../components/new/NewForm";
-import { Alert } from "../components/ui/Alert";
 import { Loading } from "../components/ui/Loading";
 import { NewTitle } from "../components/ui/NewTitle";
-import { PhotoInput } from "../components/ui/PhotoInput";
 import { photoService } from "../services/photoService";
 import type { Photo } from "../types/Photo";
+import type { ApiErrorResponse } from "../types/api";
 
 export function EditPhotoPage() {
+  const navigate = useNavigate();
   const id = useParams().id as string;
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchPhoto = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await photoService.getPhotoById(id);
+        const {
+          data: { content },
+          message,
+        } = await photoService.getPhotoById(id);
         if (isMounted) {
-          setPhoto(data);
+          setPhoto(content);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching photo");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch photo.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -46,20 +51,15 @@ export function EditPhotoPage() {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (!photo) {
-    return <Alert message="Photo not found." />;
+    void navigate("/not-found", { replace: true });
+    return null;
   }
 
   return (
     <>
       <NewTitle>Edit Photo</NewTitle>
-      <NewForm type="photo" initial={photo} editMode>
-        <PhotoInput initial={photo.imageUrl} name="photo" />
-      </NewForm>
+      <NewForm type="photos" initial={photo} editMode />
     </>
   );
 }

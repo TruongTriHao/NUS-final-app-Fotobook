@@ -1,67 +1,100 @@
-import follows from "../mocks/follows.json";
-import photos from "../mocks/photos.json";
-import users from "../mocks/users.json";
-import type { Photo, PhotoWithUser } from "../types/Photo";
-import type { User } from "../types/User";
+import type { ApiResponse } from "../types/api";
+import type { Photo, PhotoWithOwner } from "../types/Photo";
+import { apiClient } from "./apiClient";
 
-// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const photoService = {
-  getAllPhotos: async (page: number, limit: number): Promise<Photo[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    return (photos as Photo[]).slice(startIndex, endIndex);
+  createPhoto: async (formData: FormData): Promise<ApiResponse<null>> => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      "/photos",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
   },
-  getAllCount: async (): Promise<number> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (photos as Photo[]).length;
+
+  updatePhoto: async (
+    id: string,
+    formData: FormData,
+  ): Promise<ApiResponse<null>> => {
+    const response = await apiClient.patch<ApiResponse<null>>(
+      `/photos/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
   },
+
+  getPhotos: async (
+    page: number,
+    limit: number,
+  ): Promise<ApiResponse<{ photos: Photo[]; total: number }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{ photos: Photo[]; total: number }>
+    >("/admin/photos", {
+      params: { page, limit },
+    });
+    return response.data;
+  },
+
   getPhotosForMain: async (
-    type: "feeds" | "discover",
-    userId: string,
-  ): Promise<PhotoWithUser[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const followees = follows
-      .filter((follow) => follow.followerId === userId)
-      .map((follow) => follow.followeeId);
-    const photoResult = photos.filter(
-      (photo) =>
-        (type === "discover" || followees.includes(photo.ownerId)) &&
-        photo.mode === "public",
-    ) as Photo[];
-
-    photoResult.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-
-    const userIds = photoResult.map(
-      (p) => (users as User[]).find((user) => user.id === p.ownerId) ?? null,
-    );
-    const result: PhotoWithUser[] = photoResult
-      .map((photo, index) => ({ ...photo, owner: userIds[index] }))
-      .filter((photo) => photo.owner !== null) as PhotoWithUser[];
-
-    return result;
+    type: "feed" | "discover",
+    cursor: string | null,
+    limit: number = 20,
+  ): Promise<
+    ApiResponse<{ photos: PhotoWithOwner[]; nextCursor: string | null }>
+  > => {
+    const response = await apiClient.get<
+      ApiResponse<{ photos: PhotoWithOwner[]; nextCursor: string | null }>
+    >(`/main/${type}/photos`, {
+      params: { cursor, limit },
+    });
+    return response.data;
   },
+
+  likePhoto: async (id: string): Promise<ApiResponse<{ like: boolean }>> => {
+    const response = await apiClient.post<ApiResponse<{ like: boolean }>>(
+      `/photos/${id}/like`,
+    );
+    return response.data;
+  },
+
+  unlikePhoto: async (id: string): Promise<ApiResponse<{ like: boolean }>> => {
+    const response = await apiClient.delete<ApiResponse<{ like: boolean }>>(
+      `/photos/${id}/like`,
+    );
+    return response.data;
+  },
+
   getPhotosByUserId: async (
     userId: string,
-    isCurrentUser: boolean,
-  ): Promise<Photo[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return photos
-      .filter(
-        (photo) =>
-          photo.ownerId === userId &&
-          (isCurrentUser || photo.mode === "public"),
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ) as Photo[];
+  ): Promise<ApiResponse<{ photos: Photo[] }>> => {
+    const response = await apiClient.get<ApiResponse<{ photos: Photo[] }>>(
+      `/users/${userId}/photos`,
+      {
+        params: { id: userId },
+      },
+    );
+    return response.data;
   },
-  getPhotoById: async (id: string): Promise<Photo | null> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return (photos as Photo[]).find((photo) => photo.id === id) || null;
+  getPhotoById: async (
+    id: string,
+  ): Promise<ApiResponse<{ content: Photo }>> => {
+    const response = await apiClient.get<ApiResponse<{ content: Photo }>>(
+      `/photos/${id}`,
+    );
+    return response.data;
+  },
+
+  deletePhoto: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await apiClient.delete<ApiResponse<null>>(`/photos/${id}`);
+    return response.data;
   },
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import type { ProfileData } from "../../types/User";
 import { AlbumTab } from "./AlbumTab";
 import { FolloweesTab } from "./FolloweesTab";
@@ -7,9 +8,17 @@ import { PhotoTab } from "./PhotoTab";
 import { ProfileTabButtons } from "./ProfileTabButton";
 
 export function ProfileTabs({ profile }: { profile: ProfileData }) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<
     "photos" | "albums" | "followings" | "followers"
   >("photos");
+  const [numFollowees, setNumFollowees] = useState(profile.numFollowees);
+
+  const handleFollow = (change: number) => {
+    if (user?.id === profile.id) {
+      setNumFollowees((prev) => prev + change);
+    }
+  };
 
   return (
     <>
@@ -31,7 +40,7 @@ export function ProfileTabs({ profile }: { profile: ProfileData }) {
           }}
         />
         <ProfileTabButtons
-          amount={profile.numFollowees}
+          amount={numFollowees}
           label="FOLLOWINGS"
           active={activeTab === "followings"}
           onClick={() => {
@@ -59,12 +68,12 @@ export function ProfileTabs({ profile }: { profile: ProfileData }) {
       )}
       {activeTab === "followings" && (
         <>
-          <FolloweesTab id={profile.id} />
+          <FolloweesTab id={profile.id} onFollowChange={handleFollow} />
         </>
       )}
       {activeTab === "followers" && (
         <>
-          <FollowersTab id={profile.id} />
+          <FollowersTab id={profile.id} onFollowChange={handleFollow} />
         </>
       )}
     </>

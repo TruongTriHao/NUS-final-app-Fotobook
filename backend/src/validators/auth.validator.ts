@@ -13,7 +13,12 @@ export const registerSchema = z.object({
     .max(255, "Email must be 255 characters or less"),
   password: z
     .string({ error: "Password is required" })
-    .max(64, "Password must be 64 characters or less"),
+    .min(8, "Password must be at least 8 characters")
+    .max(64, "Password must be 64 characters or less")
+    .refine(
+      (val) => new TextEncoder().encode(val).length <= 72,
+      "Password must be 72 bytes or less",
+    ),
 });
 
 export const loginSchema = registerSchema.pick({

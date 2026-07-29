@@ -1,14 +1,54 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { authService } from "../../services/authService";
+import type { ApiErrorResponse } from "../../types/api";
 import { InputField } from "../ui/InputField";
+import { Loading } from "../ui/Loading";
 import { SubmitButton } from "../ui/SubmitButton";
 import { TextInput } from "../ui/TextInput";
 
 export function SignUpForm() {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const formData = new FormData(e.currentTarget);
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+      const email = formData.get("email") as string;
+      const firstName = formData.get("firstName") as string;
+      const lastName = formData.get("lastName") as string;
+      const { message } = await authService.register(
+        email,
+        password,
+        firstName,
+        lastName,
+      );
+      toast.success(message);
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message ||
+          "Failed to register. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <form
       className="flex flex-col bg-stone-50 shadow-lg border-2 border-zinc-100 rounded-lg"
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
+      onSubmit={(e) => void handleSubmit(e)}
     >
       <div className="flex flex-col mx-4 md:mx-8">
         <InputField

@@ -1,5 +1,6 @@
 import { UserRepository } from "../repositories/user.repository";
 import { AppError } from "../utils/AppError";
+import { getCloudinaryImageUrl } from "../utils/cloudinary";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email";
 import {
   decodeUnverifiedResetToken,
@@ -37,13 +38,16 @@ export class AuthService {
       password: hashedPassword,
     });
     const token = generateEmailVerifyToken(newUser.id);
-    void sendVerificationEmail(newUser.email, token);
+    await sendVerificationEmail(newUser.email, token);
   }
 
   async login(data: Login): Promise<LoginResponse> {
+    const dummyPassword =
+      "$2a$04$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
-      throw new AppError("Email not found", 401);
+      await comparePassword(data.password, dummyPassword);
+      throw new AppError("Invalid email or password", 401);
     }
     if (!user.isActive) {
       throw new AppError("User account is not active", 403);
@@ -54,7 +58,7 @@ export class AuthService {
 
     const isPasswordValid = await comparePassword(data.password, user.password);
     if (!isPasswordValid) {
-      throw new AppError("Invalid password", 401);
+      throw new AppError("Invalid email or password", 401);
     }
 
     await this.userRepository.update(user.id, {
@@ -69,7 +73,10 @@ export class AuthService {
     });
 
     return {
-      user: userResponseSchema.parse(user),
+      user: userResponseSchema.parse({
+        ...user,
+        avatarUrl: getCloudinaryImageUrl(user.avatarUrl),
+      }),
       token,
     };
   }
@@ -96,7 +103,7 @@ export class AuthService {
       throw new AppError("User not found or account is not active", 404);
     }
     const newToken = generateEmailVerifyToken(user.id);
-    void sendVerificationEmail(user.email, newToken);
+    await sendVerificationEmail(user.email, newToken);
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -105,7 +112,7 @@ export class AuthService {
       return;
     }
     const token = generatePasswordResetToken(user.id, user.password);
-    void sendPasswordResetEmail(user.email, token);
+    await sendPasswordResetEmail(user.email, token);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {

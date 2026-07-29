@@ -4,14 +4,14 @@ import { cn } from "../../utils/cn";
 export function ProfileButton({
   isCurrentUser,
   isFollowee,
-  followOnClick,
-  unfollowOnClick,
+  onClick,
+  disabled,
   className,
 }: {
   isCurrentUser: boolean;
   isFollowee: boolean;
-  followOnClick?: () => void;
-  unfollowOnClick?: () => void;
+  onClick: () => void;
+  disabled?: boolean;
   className?: string;
 }) {
   if (isCurrentUser) {
@@ -19,7 +19,7 @@ export function ProfileButton({
       <Link
         to="/profile/edit"
         className={cn(
-          "text-indigo-800 border-2 border-indigo-800 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base",
+          "text-indigo-800 border-2 border-indigo-800 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base cursor-pointer",
           className,
         )}
       >
@@ -30,9 +30,10 @@ export function ProfileButton({
   if (isFollowee) {
     return (
       <button
-        onClick={unfollowOnClick}
+        onClick={onClick}
+        disabled={disabled}
         className={cn(
-          "text-white bg-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base",
+          "text-white bg-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base cursor-pointer",
           className,
         )}
       >
@@ -42,9 +43,10 @@ export function ProfileButton({
   }
   return (
     <button
-      onClick={followOnClick}
+      onClick={onClick}
+      disabled={disabled}
       className={cn(
-        "text-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base",
+        "text-red-400 border-2 border-red-400 rounded-lg hover:opacity-70 active:opacity-50 px-0.5 md:px-3.5 md:py-1.5 text-xs md:text-base cursor-pointer",
         className,
       )}
     >

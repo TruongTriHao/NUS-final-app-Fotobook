@@ -11,7 +11,6 @@ import { adminRouter } from "./routes/admin.routes";
 import { albumRouter } from "./routes/album.routes";
 import { authRouter } from "./routes/auth.routes";
 import { feedRouter } from "./routes/feed.routes";
-import { followRouter } from "./routes/follow.routes";
 import { photoRouter } from "./routes/photo.routes";
 import { userRouter } from "./routes/user.routes";
 import { AppError } from "./utils/AppError";
@@ -19,7 +18,9 @@ import { AppError } from "./utils/AppError";
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
-  message: { message: "Too many requests, please try again later." },
+  handler: (_req: Request, _res: Response, next: NextFunction) => {
+    next(new AppError("Too many requests. Please try again later.", 429));
+  },
 });
 
 export const app = express();
@@ -42,10 +43,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/photos", photoRouter);
 app.use("/api/albums", albumRouter);
-app.use("/api/follow", followRouter);
-app.use("/api/feed", feedRouter);
+app.use("/api/main", feedRouter);
 app.use("/api/admin", adminRouter);
-app.use("/uploads", express.static("uploads/avatars"));
 
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
