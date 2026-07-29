@@ -10,7 +10,7 @@ export function AdminPhotoCard({ photo }: { photo: PhotoType }) {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative w-9/10">
         <Photo
           src={photo.imageUrl}
           alt={photo.title}
