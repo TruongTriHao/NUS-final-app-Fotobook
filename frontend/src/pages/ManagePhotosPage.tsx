@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AdminPhotoCard } from "../components/admin/AdminPhotoCard";
-import { Alert } from "../components/ui/Alert";
 import { Loading } from "../components/ui/Loading";
+import { NotFoundMessage } from "../components/ui/NotFoundMessage";
 import { Pagination } from "../components/ui/Pagination";
 import { photoService } from "../services/photoService";
 import type { Photo as PhotoType } from "../types/Photo";
+import type { ApiErrorResponse } from "../types/api";
 
 export function ManagePhotosPage() {
   const [photos, setPhotos] = useState<PhotoType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const ITEMS_PER_PAGE = 40;
 
   useEffect(() => {
@@ -19,18 +20,20 @@ export function ManagePhotosPage() {
     const fetchPhotos = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const [data, totalItems] = await Promise.all([
-          photoService.getAllPhotos(currentPage, ITEMS_PER_PAGE),
-          photoService.getAllCount(),
-        ]);
+        const {
+          data: { photos, total },
+          message,
+        } = await photoService.getPhotos(currentPage, ITEMS_PER_PAGE);
         if (isMounted) {
-          setPhotos(data);
-          setTotalPages(Math.ceil(totalItems / ITEMS_PER_PAGE));
+          setPhotos(photos);
+          setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching photos");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch photos.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -50,12 +53,8 @@ export function ManagePhotosPage() {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (photos.length === 0) {
-    return <div>No photos found.</div>;
+    return <NotFoundMessage itemType="photos" />;
   }
 
   return (

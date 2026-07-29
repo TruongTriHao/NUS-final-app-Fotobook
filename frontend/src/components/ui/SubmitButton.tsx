@@ -3,17 +3,20 @@ import { cn } from "../../utils/cn";
 export function SubmitButton({
   text = "Submit",
   className,
+  disabled,
   onClick,
 }: {
   text?: string;
   className?: string;
+  disabled?: boolean;
   onClick?: () => void;
 }) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={cn(
-        "self-center bg-indigo-800 text-xs md:text-base text-white rounded-sm font-bold px-2.75 md:px-5.5 py-1.25 md:py-2.5 my-1.25 md:my-2.5 hover:opacity-70 active:opacity-50",
+        "self-center bg-indigo-800 text-xs md:text-base text-white rounded-sm font-bold px-2.75 md:px-5.5 py-1.25 md:py-2.5 my-1.25 md:my-2.5 hover:opacity-70 active:opacity-50 cursor-pointer",
         className,
       )}
       type="submit"

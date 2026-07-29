@@ -1,31 +1,37 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { EditProfileAdminForm } from "../components/admin/EditProfileAdminForm";
-import { Alert } from "../components/ui/Alert";
 import { Loading } from "../components/ui/Loading";
 import { NewTitle } from "../components/ui/NewTitle";
 import { userService } from "../services/userService";
-import type { User } from "../types/User";
+import type { AdminUserData } from "../types/User";
+import type { ApiErrorResponse } from "../types/api";
 
 export function EditProfileAdminPage() {
+  const navigate = useNavigate();
   const id = useParams().id as string;
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AdminUserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchUser = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await userService.getUserById(id);
+        const {
+          data: { user },
+          message,
+        } = await userService.getUserById(id);
         if (isMounted) {
-          setUser(data);
+          setUser(user);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching user");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch user.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -45,12 +51,9 @@ export function EditProfileAdminPage() {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (!user) {
-    return <Alert message="User not found." />;
+    void navigate("/not-found", { replace: true });
+    return null;
   }
 
   return (

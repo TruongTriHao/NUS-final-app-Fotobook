@@ -1,33 +1,23 @@
-import follows from "../mocks/follows.json";
+import type { ApiResponse } from "../types/api";
 import type { ProfileData } from "../types/User";
-import { userService } from "./userService";
+import { apiClient } from "./apiClient";
 
-// Temporary mock service with 1 second delay to simulate API calls. TODO: replace with real API calls when backend is ready.
 export const followService = {
-  getFollowersProfileData: async (id: string): Promise<ProfileData[]> => {
-    const followerIds = follows
-      .filter((follow) => follow.followeeId === id)
-      .map((follow) => follow.followerId);
-    const profile = await Promise.all(
-      followerIds.map((followerId) =>
-        userService.getProfileData(id, followerId),
-      ),
-    );
-    return profile
-      .filter((profileData) => profileData !== null)
-      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+  getFollowersProfileData: async (
+    id: string,
+  ): Promise<ApiResponse<{ followers: ProfileData[] }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{ followers: ProfileData[] }>
+    >(`/users/${id}/followers`);
+    return response.data;
   },
-  getFolloweesProfileData: async (id: string): Promise<ProfileData[]> => {
-    const followeeIds = follows
-      .filter((follow) => follow.followerId === id)
-      .map((follow) => follow.followeeId);
-    const profile = await Promise.all(
-      followeeIds.map((followeeId) =>
-        userService.getProfileData(id, followeeId),
-      ),
-    );
-    return profile
-      .filter((profileData) => profileData !== null)
-      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+
+  getFolloweesProfileData: async (
+    id: string,
+  ): Promise<ApiResponse<{ followees: ProfileData[] }>> => {
+    const response = await apiClient.get<
+      ApiResponse<{ followees: ProfileData[] }>
+    >(`/users/${id}/following`);
+    return response.data;
   },
 };

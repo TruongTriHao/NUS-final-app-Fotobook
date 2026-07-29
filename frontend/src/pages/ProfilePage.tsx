@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Alert } from "../components/ui/Alert";
+import { toast } from "sonner";
 import { Loading } from "../components/ui/Loading";
 import { ProfileAvatar } from "../components/user/ProfileAvatar";
 import { ProfileButton } from "../components/user/ProfileButton";
 import { ProfileTabs } from "../components/user/ProfileTabs";
 import { useAuth } from "../hooks/useAuth";
 import { userService } from "../services/userService";
+import type { ApiErrorResponse } from "../types/api";
 import type { ProfileData } from "../types/User";
 
 export function ProfilePage() {
@@ -15,13 +16,39 @@ export function ProfilePage() {
   const { userId } = useParams();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [isFollowee, setIsFollowee] = useState(false);
 
   const activeId = userId ?? currentUser?.id;
 
+  const handleFollow = async () => {
+    if (!currentUser) {
+      toast.error("You must be logged in to follow users.");
+      return;
+    }
+    try {
+      setFollowLoading(true);
+      const {
+        data: { follow },
+        message,
+      } = isFollowee
+        ? await userService.unfollowUser(profile?.id ?? "")
+        : await userService.followUser(profile?.id ?? "");
+      setIsFollowee(follow);
+      toast.success(message);
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message ||
+          "An error occurred while following the user.",
+      );
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (userId && currentUser?.id === userId) {
-      void navigate("/me", { replace: true });
+      void navigate("/profile/me", { replace: true });
       return;
     }
 
@@ -29,22 +56,23 @@ export function ProfilePage() {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await userService.getProfileData(
+        const {
+          data: { user },
+          message,
+        } = await userService.getProfileData(
           currentUser?.id ?? "",
           activeId ?? "",
         );
-        if (!data) {
-          void navigate("/not-found", { replace: true });
-          return;
-        }
         if (isMounted) {
-          setProfile(data);
+          setProfile(user);
+          setIsFollowee(user.isFollowee);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(
-            e instanceof Error ? e.message : "Error fetching profile data",
+          toast.error(
+            (error as ApiErrorResponse).message ||
+              "Failed to fetch profile data",
           );
         }
       } finally {
@@ -65,12 +93,9 @@ export function ProfilePage() {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (!profile) {
-    return <Alert message="Profile not found" />;
+    void navigate("/not-found", { replace: true });
+    return null;
   }
 
   return (
@@ -81,7 +106,7 @@ export function ProfilePage() {
           className="m-2 md:m-8"
           to={
             profile.isCurrentUser
-              ? "/me"
+              ? "/profile/me"
               : activeId
                 ? `/profile/${activeId}`
                 : undefined
@@ -89,8 +114,10 @@ export function ProfilePage() {
         />
         <div className="flex flex-col items-start md:gap-2">
           <ProfileButton
+            disabled={followLoading}
+            onClick={() => void handleFollow()}
             isCurrentUser={profile.isCurrentUser}
-            isFollowee={profile.isFollowee}
+            isFollowee={isFollowee}
           />
           <div className="font-bold text-lg md:text-4xl">
             {profile.firstName} {profile.lastName}

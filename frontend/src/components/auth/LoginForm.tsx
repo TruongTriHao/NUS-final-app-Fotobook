@@ -1,9 +1,10 @@
 import { LogIn } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../hooks/useAuth";
 import { authService } from "../../services/authService";
-import { Alert } from "../ui/Alert";
+import type { ApiErrorResponse } from "../../types/api";
 import { Loading } from "../ui/Loading";
 import { SubmitButton } from "../ui/SubmitButton";
 import { TextInput } from "../ui/TextInput";
@@ -13,26 +14,24 @@ import { SocialLogin } from "./SocialLogin";
 export function LoginForm() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       setLoading(true);
-      setError(null);
       const formData = new FormData(event.currentTarget);
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
-
-      const user = await authService.login(email, password);
-      if (!user) {
-        setError("Invalid email or password.");
-        return;
-      }
+      const {
+        data: { user },
+        message,
+      } = await authService.login(email, password);
       login(user);
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Failed to login. Please try again.",
+      toast.success(message);
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message ||
+          "Failed to login. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -45,7 +44,6 @@ export function LoginForm() {
 
   return (
     <>
-      {error && <Alert message={error} />}
       <Title>Fotobook Login</Title>
       <SocialLogin />
       <form
@@ -71,7 +69,7 @@ export function LoginForm() {
         <SubmitButton text="Login" />
         <Link
           className="text-slate-500 my-2.5 md:my-4 text-xs md:text-base hover:opacity-70 active:text-slate-700"
-          to="#"
+          to="/forgot-password"
         >
           Forgot password?
         </Link>

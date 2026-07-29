@@ -11,7 +11,7 @@ export function AuthButton({
 
   return isAuthenticated ? (
     <button
-      className="text-white hover:text-indigo-300 active:text-indigo-400 text-xs md:text-base mx-2 md:mx-4"
+      className="text-white hover:text-indigo-300 active:text-indigo-400 text-xs md:text-base mx-2 md:mx-4 cursor-pointer"
       onClick={() => {
         logout();
         void navigate("/login");
@@ -21,7 +21,7 @@ export function AuthButton({
     </button>
   ) : (
     <button
-      className="text-white hover:text-indigo-300 active:text-indigo-400 text-xs md:text-base mx-2 md:mx-4"
+      className="text-white hover:text-indigo-300 active:text-indigo-400 text-xs md:text-base mx-2 md:mx-4 cursor-pointer"
       onClick={() => void navigate("/login")}
     >
       Login

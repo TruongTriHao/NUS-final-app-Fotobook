@@ -1,25 +1,19 @@
 import { ImagePlus, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Album } from "../../types/Album";
+import type { SelectedPhoto } from "../new/NewForm";
 import { Photo } from "./Photo";
-
-type SelectedPhoto =
-  | { type: "existing"; id: string; url: string }
-  | {
-      type: "new";
-      id: string;
-      file: File;
-      previewUrl: string;
-    };
 
 export function AlbumInput({
   id,
   initial = null,
   name,
+  onPhotosChange,
 }: {
   id?: string;
   initial?: Album | null;
   name?: string;
+  onPhotosChange?: (photos: SelectedPhoto[]) => void;
 }) {
   const [photos, setPhotos] = useState<SelectedPhoto[]>(
     initial
@@ -31,14 +25,16 @@ export function AlbumInput({
       : [],
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    onPhotosChange?.(photos);
+  }, [photos, onPhotosChange]);
   const handleClick = () => {
     fileInputRef.current?.click();
   };
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    const newFiles = Array.from(files);
-    const newPhotos: SelectedPhoto[] = newFiles.map((file) => ({
+    const newPhotos: SelectedPhoto[] = Array.from(files).map((file) => ({
       type: "new",
       id: crypto.randomUUID(),
       file,
@@ -52,11 +48,21 @@ export function AlbumInput({
 
   const handleDelete = (id: string) => {
     const photoToDelete = photos.find((p) => p.id === id);
-    if (photoToDelete && photoToDelete.type === "new") {
+    if (photoToDelete?.type === "new") {
       URL.revokeObjectURL(photoToDelete.previewUrl);
     }
     setPhotos((prev) => prev.filter((p) => p.id !== id));
   };
+
+  useEffect(() => {
+    return () => {
+      photos.forEach((photo) => {
+        if (photo.type === "new") {
+          URL.revokeObjectURL(photo.previewUrl);
+        }
+      });
+    };
+  }, [photos]);
 
   return (
     <div className="flex flex-wrap gap-4 mx-2 md:mx-4 my-1.25 md:my-2.5">
@@ -82,10 +88,12 @@ export function AlbumInput({
             id={id}
             name={name}
             type="file"
+            multiple
             accept="image/*"
-            className="hidden"
+            className="sr-only"
             ref={fileInputRef}
             onChange={handleImageChange}
+            required={photos.length === 0}
           />
           <ImagePlus
             className="border-2 border-dashed border-neutral-200 bg-zinc-100 size-16 md:size-32 cursor-pointer"

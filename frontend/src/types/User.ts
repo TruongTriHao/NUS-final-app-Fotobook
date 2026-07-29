@@ -5,8 +5,6 @@ export type User = {
   email: string;
   role: "user" | "admin";
   avatarUrl?: string | null;
-  lastLogin?: string | null;
-  isActive: boolean;
 };
 
 export type ProfileData = User & {
@@ -16,4 +14,9 @@ export type ProfileData = User & {
   numAlbums: number;
   numFollowers: number;
   numFollowees: number;
+};
+
+export type AdminUserData = User & {
+  lastLogin?: string | null;
+  isActive: boolean;
 };

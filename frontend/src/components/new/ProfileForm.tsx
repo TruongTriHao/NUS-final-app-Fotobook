@@ -1,20 +1,78 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "../../hooks/useAuth";
+import { userService } from "../../services/userService";
+import type { ApiErrorResponse } from "../../types/api";
 import type { User } from "../../types/User";
 import { InputField } from "../ui/InputField";
+import { Loading } from "../ui/Loading";
 import { PhotoInput } from "../ui/PhotoInput";
 import { SaveButton } from "../ui/SaveButton";
 import { TextInput } from "../ui/TextInput";
 import { Title } from "../ui/Title";
 
 export function ProfileForm({ initial }: { initial: User }) {
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const formData = new FormData(e.currentTarget);
+      if (formData.has("newPassword")) {
+        if (
+          formData.get("newPassword") !== formData.get("passwordConfirmation")
+        ) {
+          toast.error("New password and confirmation do not match.");
+          return;
+        }
+      } else {
+        const fileInput = formData.get("avatars") as File | null;
+        if (fileInput && fileInput.size > 0) {
+          formData.append("deleteAvatar", "true");
+        } else if (isAvatarDeleted) {
+          formData.append("deleteAvatar", "true");
+        } else {
+          formData.append("deleteAvatar", "false");
+        }
+      }
+      const {
+        data: { user },
+        message,
+      } = await userService.updateProfile(formData);
+      login(user);
+      toast.success(message);
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message || "Failed to update profile.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <>
       <form
         className="flex flex-col items-center my-5 md:my-10"
         onSubmit={(e) => {
-          e.preventDefault();
+          void handleSubmit(e);
         }}
       >
-        <PhotoInput initial={initial.avatarUrl} name="avatar" />
+        <PhotoInput
+          initial={initial.avatarUrl}
+          name="avatars"
+          onDelete={() => {
+            setIsAvatarDeleted(true);
+          }}
+          required={false}
+        />
         <div className="flex flex-col items-center my-2.5 md:my-5">
           <Title className="text-xs md:text-base">Basic Information</Title>
           <InputField
@@ -71,9 +129,7 @@ export function ProfileForm({ initial }: { initial: User }) {
       </form>
       <form
         className="flex flex-col items-center"
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
+        onSubmit={(e) => void handleSubmit(e)}
       >
         <div className="flex flex-col items-center my-2.5 md:my-5">
           <Title className="text-xs md:text-base">Password</Title>

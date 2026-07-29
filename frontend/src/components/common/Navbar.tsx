@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../../hooks/useAuth";
+import { authService } from "../../services/authService";
+import type { ApiErrorResponse } from "../../types/api";
 import { AuthButton } from "../ui/AuthButton";
 import { Logo } from "../ui/Logo";
 import { SearchBar } from "../ui/SearchBar";
@@ -7,6 +10,19 @@ import { UserInfo } from "../ui/UserInfo";
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      const { message } = await authService.logout();
+      logout();
+      toast.success(message);
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message ||
+          "Failed to logout. Please try again.",
+      );
+    }
+  };
 
   return (
     <nav
@@ -28,7 +44,10 @@ export function Navbar() {
       ) : (
         <div />
       )}
-      <AuthButton isAuthenticated={isAuthenticated} logout={logout} />
+      <AuthButton
+        isAuthenticated={isAuthenticated}
+        logout={() => void handleLogout()}
+      />
     </nav>
   );
 }

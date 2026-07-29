@@ -7,7 +7,7 @@ export function Avatar({
   user,
   className,
   defaultClassName,
-  to = "/me",
+  to = "/profile/me",
 }: {
   user: User | null;
   className?: string;

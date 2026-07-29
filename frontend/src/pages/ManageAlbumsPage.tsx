@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AdminAlbumCard } from "../components/admin/AdminAlbumCard";
-import { Alert } from "../components/ui/Alert";
 import { Loading } from "../components/ui/Loading";
+import { NotFoundMessage } from "../components/ui/NotFoundMessage";
 import { Pagination } from "../components/ui/Pagination";
 import { albumService } from "../services/albumService";
 import type { Album as AlbumType } from "../types/Album";
+import type { ApiErrorResponse } from "../types/api";
 
 export function ManageAlbumsPage() {
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const ITEMS_PER_PAGE = 40;
 
   useEffect(() => {
@@ -19,18 +20,20 @@ export function ManageAlbumsPage() {
     const fetchAlbums = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const [data, totalItems] = await Promise.all([
-          albumService.getAllAlbums(currentPage, ITEMS_PER_PAGE),
-          albumService.getAllCount(),
-        ]);
+        const {
+          data: { albums, total },
+          message,
+        } = await albumService.getAlbums(currentPage, ITEMS_PER_PAGE);
         if (isMounted) {
-          setAlbums(data);
-          setTotalPages(Math.ceil(totalItems / ITEMS_PER_PAGE));
+          setAlbums(albums);
+          setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching albums");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch albums.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -50,12 +53,8 @@ export function ManageAlbumsPage() {
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (albums.length === 0) {
-    return <div>No albums found.</div>;
+    return <NotFoundMessage itemType="albums" />;
   }
 
   return (

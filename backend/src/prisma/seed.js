@@ -6,6 +6,15 @@ import { prisma } from "../lib/prisma";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const prismaModels = {
+  User: prisma.user,
+  Photo: prisma.photo,
+  Album: prisma.album,
+  Follow: prisma.follow,
+  PhotoLike: prisma.photoLike,
+  AlbumLike: prisma.albumLike,
+};
+
 async function seed(path, tableName, transformData = null) {
   const filePath = join(__dirname, path);
   let jsonData = JSON.parse(readFileSync(filePath, "utf8"));
@@ -14,15 +23,15 @@ async function seed(path, tableName, transformData = null) {
     jsonData = transformData(jsonData);
   }
 
-  try {
-    const result = await prisma[tableName].createMany({
-      data: jsonData,
-      skipDuplicates: true,
-    });
-    console.log(`Successfully inserted ${result.count} records!`);
-  } catch (error) {
-    console.error("Error inserting data:", error);
+  const model = prismaModels[tableName];
+  if (!model) {
+    throw new Error(`Model for table ${tableName} not found.`);
   }
+  const result = await model.createMany({
+    data: jsonData,
+    skipDuplicates: true,
+  });
+  console.log(`Successfully inserted ${result.count} records!`);
 }
 
 async function main() {

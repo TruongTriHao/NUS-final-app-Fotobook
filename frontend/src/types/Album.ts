@@ -11,4 +11,7 @@ export type Album = {
   ownerId: string;
 };
 
-export type AlbumWithUser = Album & { owner: User };
+export type AlbumWithOwner = Album & {
+  isLiked: boolean;
+  isFollowee: boolean;
+} & { owner: User & { isFollowee: boolean } };

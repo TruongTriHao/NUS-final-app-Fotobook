@@ -1,19 +1,67 @@
-import type { User } from "../../types/User";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { userService } from "../../services/userService";
+import type { ApiErrorResponse } from "../../types/api";
+import type { AdminUserData } from "../../types/User";
 import { InputField } from "../ui/InputField";
+import { Loading } from "../ui/Loading";
 import { PhotoInput } from "../ui/PhotoInput";
 import { SaveButton } from "../ui/SaveButton";
 import { TextInput } from "../ui/TextInput";
 import { Title } from "../ui/Title";
 
-export function EditProfileAdminForm({ initial }: { initial: User }) {
+export function EditProfileAdminForm({ initial }: { initial: AdminUserData }) {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const formData = new FormData(e.currentTarget);
+      const fileInput = formData.get("avatars") as File | null;
+      if (fileInput && fileInput.size > 0) {
+        formData.append("deleteAvatar", "true");
+      } else if (isAvatarDeleted) {
+        formData.append("deleteAvatar", "true");
+      } else {
+        formData.append("deleteAvatar", "false");
+      }
+      formData.append("isActive", String(formData.has("active")));
+      const { message } = await userService.updateAdminUser(
+        initial.id,
+        formData,
+      );
+      toast.success(message);
+      void navigate("/admin/users");
+    } catch (error) {
+      toast.error(
+        (error as ApiErrorResponse).message || "Failed to update user profile.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <form
       className="flex flex-col items-center my-5 md:my-10"
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
+      onSubmit={(e) => void handleSubmit(e)}
     >
-      <PhotoInput initial={initial.avatarUrl} name="avatar" />
+      <PhotoInput
+        initial={initial.avatarUrl}
+        name="avatars"
+        onDelete={() => {
+          setIsAvatarDeleted(true);
+        }}
+        required={false}
+      />
       <div className="flex flex-col items-center my-2.5 md:my-5">
         <Title className="text-xs md:text-base">Basic Information</Title>
         <InputField
@@ -75,7 +123,6 @@ export function EditProfileAdminForm({ initial }: { initial: User }) {
             id="password"
             name="password"
             type="password"
-            required
             className="mx-0.75 md:mx-1.5 p-1.25 md:p-2.5"
           />
         </InputField>

@@ -19,7 +19,7 @@ enum Visibility {
 }
 
 model User {
-  id String @id @default(cuid())
+  id String @id @default(cuid(2))
 
   firstName String @db.VarChar(25)
   lastName  String @db.VarChar(25)
@@ -46,7 +46,7 @@ model User {
 }
 
 model Photo {
-  id String @id @default(cuid())
+  id String @id @default(cuid(2))
 
   title       String @db.VarChar(140)
   description String @db.VarChar(300)
@@ -67,7 +67,7 @@ model Photo {
 }
 
 model Album {
-  id String @id @default(cuid())
+  id String @id @default(cuid(2))
 
   title       String @db.VarChar(140)
   description String @db.VarChar(300)
@@ -119,18 +119,3 @@ model AlbumLike {
   @@id([userId, albumId])
   @@index([albumId])
 }
-
-// model AlbumImage {
-//   id String @id @default(cuid())
-
-//   imageUrl String
-
-//   order Int @default(0)
-
-//   albumId String
-//   album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
-
-//   createdAt DateTime @default(now()) @db.Timestamptz
-
-//   @@index([albumId])
-// }

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { albumService } from "../../services/albumService";
 import type { Album as AlbumType } from "../../types/Album";
-import { Alert } from "../ui/Alert";
+import type { ApiErrorResponse } from "../../types/api";
 import { Loading } from "../ui/Loading";
+import { NotFoundMessage } from "../ui/NotFoundMessage";
 import { AddButton } from "./AddButton";
 import { AlbumTabCard } from "./AlbumTabCard";
 import { ProfileGrid } from "./ProfileGrid";
@@ -18,21 +20,25 @@ export function AlbumTab({
   const navigate = useNavigate();
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     const fetchAlbums = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const data = await albumService.getAlbumsByUserId(id, isCurrentUser);
+        const {
+          data: { albums },
+          message,
+        } = await albumService.getAlbumsByUserId(id);
         if (isMounted) {
-          setAlbums(data);
+          setAlbums(albums);
+          toast.success(message);
         }
-      } catch (e) {
+      } catch (error) {
         if (isMounted) {
-          setError(e instanceof Error ? e.message : "Error fetching albums");
+          toast.error(
+            (error as ApiErrorResponse).message || "Failed to fetch albums.",
+          );
         }
       } finally {
         if (isMounted) {
@@ -52,12 +58,18 @@ export function AlbumTab({
     return <Loading />;
   }
 
-  if (error) {
-    return <Alert message={error} />;
-  }
-
   if (albums.length === 0) {
-    return <div>No albums found.</div>;
+    return (
+      <>
+        {isCurrentUser && (
+          <AddButton
+            text="Add Album"
+            onClick={() => void navigate("/albums/new")}
+          />
+        )}
+        <NotFoundMessage itemType="albums" />
+      </>
+    );
   }
 
   return (
