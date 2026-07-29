@@ -43,7 +43,7 @@ export class AuthService {
 
   async login(data: Login): Promise<LoginResponse> {
     const dummyPassword =
-      "$2a$04$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+      "$2a$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
       await comparePassword(data.password, dummyPassword);
