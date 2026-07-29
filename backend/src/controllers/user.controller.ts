@@ -104,15 +104,23 @@ export class UserController {
 
   async updateProfile(req: Request, res: Response): Promise<void> {
     const userId = req.user?.id ?? "";
-    const updatedUser = await this.userService.updateProfile(
+    const { user, requiresRelogin } = await this.userService.updateProfile(
       userId,
       req.body as UserUpdate,
     );
 
+    if (requiresRelogin) {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      });
+    }
+
     res.status(200).json({
       status: "success",
       message: "User profile updated successfully",
-      data: { user: updatedUser },
+      data: { user, requiresRelogin },
     });
   }
 

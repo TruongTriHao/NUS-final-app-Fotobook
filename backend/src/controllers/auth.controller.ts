@@ -31,7 +31,7 @@ export class AuthController {
     res.cookie("token", result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: convertJwtExpiresToMaxAge(process.env.JWT_EXPIRES_IN || "1d"),
     });
     res.status(200).json({
@@ -45,7 +45,7 @@ export class AuthController {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     });
     res.status(200).json({
       status: "success",
