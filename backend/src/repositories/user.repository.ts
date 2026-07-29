@@ -11,11 +11,14 @@ import type {
 } from "../validators/user.validator";
 
 export class UserRepository {
-  create(user: UserCreateInput): Promise<User> {
+  async create(user: UserCreateInput): Promise<User> {
     return prisma.user.create({ data: user });
   }
 
-  createFollow(currentUserId: string, targetUserId: string): Promise<Follow> {
+  async createFollow(
+    currentUserId: string,
+    targetUserId: string,
+  ): Promise<Follow> {
     return prisma.follow.create({
       data: {
         followerId: currentUserId,
@@ -24,15 +27,15 @@ export class UserRepository {
     });
   }
 
-  findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { id } });
   }
 
-  findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
   }
 
-  findFollow(
+  async findFollow(
     currentUserId: string,
     targetUserId: string,
   ): Promise<Follow | null> {
@@ -263,15 +266,18 @@ export class UserRepository {
     }));
   }
 
-  update(id: string, user: UserUpdateInput): Promise<User> {
+  async update(id: string, user: UserUpdateInput): Promise<User> {
     return prisma.user.update({ where: { id }, data: user });
   }
 
-  delete(id: string): Promise<User> {
+  async delete(id: string): Promise<User> {
     return prisma.user.delete({ where: { id } });
   }
 
-  deleteFollow(currentUserId: string, targetUserId: string): Promise<Follow> {
+  async deleteFollow(
+    currentUserId: string,
+    targetUserId: string,
+  ): Promise<Follow> {
     return prisma.follow.delete({
       where: {
         followerId_followeeId: {
