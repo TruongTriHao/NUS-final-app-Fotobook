@@ -21,11 +21,9 @@ export function EditPhotoPage() {
         setLoading(true);
         const {
           data: { content },
-          message,
         } = await photoService.getPhotoById(id);
         if (isMounted) {
           setPhoto(content);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

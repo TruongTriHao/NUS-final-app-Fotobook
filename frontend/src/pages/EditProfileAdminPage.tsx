@@ -21,11 +21,9 @@ export function EditProfileAdminPage() {
         setLoading(true);
         const {
           data: { user },
-          message,
         } = await userService.getUserById(id);
         if (isMounted) {
           setUser(user);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

@@ -21,11 +21,9 @@ export function EditAlbumPage() {
         setLoading(true);
         const {
           data: { content },
-          message,
         } = await albumService.getAlbumById(id);
         if (isMounted) {
           setAlbum(content);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

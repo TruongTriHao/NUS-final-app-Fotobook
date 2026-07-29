@@ -39,12 +39,10 @@ export function ManageUsersPage() {
         setLoading(true);
         const {
           data: { users, total },
-          message,
         } = await userService.getUsers(currentPage, ITEMS_PER_PAGE);
         if (isMounted) {
           setUsers(users);
           setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

@@ -58,7 +58,6 @@ export function ProfilePage() {
         setLoading(true);
         const {
           data: { user },
-          message,
         } = await userService.getProfileData(
           currentUser?.id ?? "",
           activeId ?? "",
@@ -66,7 +65,6 @@ export function ProfilePage() {
         if (isMounted) {
           setProfile(user);
           setIsFollowee(user.isFollowee);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

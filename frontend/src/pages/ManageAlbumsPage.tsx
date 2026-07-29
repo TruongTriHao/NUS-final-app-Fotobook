@@ -22,12 +22,10 @@ export function ManageAlbumsPage() {
         setLoading(true);
         const {
           data: { albums, total },
-          message,
         } = await albumService.getAlbums(currentPage, ITEMS_PER_PAGE);
         if (isMounted) {
           setAlbums(albums);
           setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

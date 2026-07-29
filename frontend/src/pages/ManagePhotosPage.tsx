@@ -22,12 +22,10 @@ export function ManagePhotosPage() {
         setLoading(true);
         const {
           data: { photos, total },
-          message,
         } = await photoService.getPhotos(currentPage, ITEMS_PER_PAGE);
         if (isMounted) {
           setPhotos(photos);
           setTotalPages(Math.ceil(total / ITEMS_PER_PAGE));
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

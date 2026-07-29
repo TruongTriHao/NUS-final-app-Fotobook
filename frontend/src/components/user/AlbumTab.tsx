@@ -28,11 +28,9 @@ export function AlbumTab({
         setLoading(true);
         const {
           data: { albums },
-          message,
         } = await albumService.getAlbumsByUserId(id);
         if (isMounted) {
           setAlbums(albums);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {

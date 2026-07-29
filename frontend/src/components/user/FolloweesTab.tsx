@@ -25,11 +25,9 @@ export function FolloweesTab({
         setLoading(true);
         const {
           data: { followees },
-          message,
         } = await followService.getFolloweesProfileData(id);
         if (isMounted) {
           setFollowees(followees);
-          toast.success(message);
         }
       } catch (error) {
         if (isMounted) {
