@@ -109,14 +109,13 @@ export class UserRepository {
   async findPublicProfile(
     id: string,
     currentUserId: string,
-  ): Promise<Omit<UserProfile, "isCurrentUser"> | null> {
+  ): Promise<Omit<UserProfile, "isCurrentUser" | "email"> | null> {
     const profile = await prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
         firstName: true,
         lastName: true,
-        email: true,
         role: true,
         avatarUrl: true,
         _count: {

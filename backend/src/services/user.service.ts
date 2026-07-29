@@ -7,6 +7,8 @@ import {
   deleteFromCloudinary,
   getCloudinaryImageUrl,
 } from "../utils/cloudinary";
+import { sendVerificationEmail } from "../utils/email";
+import { generateEmailVerifyToken } from "../utils/jwt";
 import { comparePassword, hashPassword } from "../utils/password";
 import { type UpdateAdminUserBody } from "../validators/admin.validator";
 import type { BaseAlbum } from "../validators/album.validator";
@@ -14,9 +16,11 @@ import type { BasePhoto } from "../validators/photo.validator";
 import {
   adminUserDataSchema,
   userProfileSchema,
+  userPublicProfileSchema,
   userResponseSchema,
   type AdminUserData,
   type UserProfile,
+  type UserPublicProfile,
   type UserResponse,
   type UserUpdate,
 } from "../validators/user.validator";
@@ -69,7 +73,7 @@ export class UserService {
   async getPublicProfile(
     userId: string,
     currentUserId: string,
-  ): Promise<UserProfile> {
+  ): Promise<UserPublicProfile> {
     const profile = await this.userRepository.findPublicProfile(
       userId,
       currentUserId,
@@ -79,7 +83,7 @@ export class UserService {
       throw new AppError("User not found", 404);
     }
 
-    return userProfileSchema.parse({
+    return userPublicProfileSchema.parse({
       ...profile,
       isCurrentUser: userId === currentUserId,
       avatarUrl: getCloudinaryImageUrl(profile.avatarUrl),
@@ -171,13 +175,19 @@ export class UserService {
     });
   }
 
-  async updateProfile(userId: string, data: UserUpdate): Promise<UserResponse> {
+  async updateProfile(
+    userId: string,
+    data: UserUpdate,
+  ): Promise<{ user: UserResponse; requiresRelogin: boolean }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new AppError("User not found", 404);
     }
-    if (data.email && data.email !== user.email) {
-      const existingUser = await this.userRepository.findByEmail(data.email);
+    const emailChanged = data.email !== undefined && data.email !== user.email;
+    if (emailChanged) {
+      const existingUser = await this.userRepository.findByEmail(
+        data.email as string,
+      );
       if (existingUser) {
         throw new AppError("Email is already in use", 400);
       }
@@ -203,6 +213,9 @@ export class UserService {
         updateData.password = await hashPassword(newPassword);
       }
     }
+    if (emailChanged) {
+      updateData.isVerified = false;
+    }
     const publicId = user.avatarUrl;
     if (deleteAvatar) {
       if (publicId) {
@@ -213,10 +226,17 @@ export class UserService {
       ...updateData,
       avatarUrl: imageUrl ?? (deleteAvatar ? null : publicId),
     });
-    return userResponseSchema.parse({
-      ...updatedUser,
-      avatarUrl: getCloudinaryImageUrl(updatedUser.avatarUrl),
-    });
+    if (emailChanged) {
+      const token = generateEmailVerifyToken(updatedUser.id);
+      await sendVerificationEmail(updatedUser.email, token);
+    }
+    return {
+      user: userResponseSchema.parse({
+        ...updatedUser,
+        avatarUrl: getCloudinaryImageUrl(updatedUser.avatarUrl),
+      }),
+      requiresRelogin: emailChanged,
+    };
   }
 
   async updateAdminUser(

@@ -48,16 +48,14 @@ export const userService = {
 
   updateProfile: async (
     formData: FormData,
-  ): Promise<ApiResponse<{ user: User }>> => {
-    const response = await apiClient.patch<ApiResponse<{ user: User }>>(
-      "/users/me",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  ): Promise<ApiResponse<{ user: User; requiresRelogin: boolean }>> => {
+    const response = await apiClient.patch<
+      ApiResponse<{ user: User; requiresRelogin: boolean }>
+    >("/users/me", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
+    });
     return response.data;
   },
 

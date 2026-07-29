@@ -58,6 +58,10 @@ export const userProfileSchema = userResponseSchema.extend({
   numFollowees: z.number().int().nonnegative(),
 });
 
+export const userPublicProfileSchema = userProfileSchema.omit({
+  email: true,
+});
+
 export const userUpdateSchema = baseUserSchema
   .pick({
     firstName: true,
@@ -86,6 +90,7 @@ export const adminUserDataSchema = baseUserSchema.pick({
 
 export type UserResponse = z.infer<typeof userResponseSchema>;
 export type UserProfile = z.infer<typeof userProfileSchema>;
+export type UserPublicProfile = z.infer<typeof userPublicProfileSchema>;
 export type UserUpdate = z.infer<typeof userUpdateSchema>;
 export type contentType = z.infer<typeof contentTypeSchema>;
 export type IdInput = z.infer<typeof idInputSchema>;

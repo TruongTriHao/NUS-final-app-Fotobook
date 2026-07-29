@@ -12,7 +12,7 @@ import { TextInput } from "../ui/TextInput";
 import { Title } from "../ui/Title";
 
 export function ProfileForm({ initial }: { initial: User }) {
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
 
@@ -21,7 +21,8 @@ export function ProfileForm({ initial }: { initial: User }) {
     try {
       setLoading(true);
       const formData = new FormData(e.currentTarget);
-      if (formData.has("newPassword")) {
+      const newPassword = formData.get("newPassword") as string;
+      if (newPassword) {
         if (
           formData.get("newPassword") !== formData.get("passwordConfirmation")
         ) {
@@ -39,11 +40,18 @@ export function ProfileForm({ initial }: { initial: User }) {
         }
       }
       const {
-        data: { user },
+        data: { user, requiresRelogin },
         message,
       } = await userService.updateProfile(formData);
-      login(user);
+      if (requiresRelogin) {
+        toast.success(
+          "Email updated. Check your email to verify and log in again.",
+        );
+        logout();
+        return;
+      }
       toast.success(message);
+      login(user);
     } catch (error) {
       toast.error(
         (error as ApiErrorResponse).message || "Failed to update profile.",
