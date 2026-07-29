@@ -4,7 +4,11 @@ import type {
   UserUpdateInput,
 } from "../generated/prisma/models";
 import { prisma } from "../lib/prisma";
-import type { AdminUserData, UserProfile } from "../validators/user.validator";
+import type {
+  AdminUserData,
+  UserProfile,
+  UserPublicProfile,
+} from "../validators/user.validator";
 
 export class UserRepository {
   create(user: UserCreateInput): Promise<User> {
@@ -109,7 +113,7 @@ export class UserRepository {
   async findPublicProfile(
     id: string,
     currentUserId: string,
-  ): Promise<Omit<UserProfile, "isCurrentUser" | "email"> | null> {
+  ): Promise<Omit<UserPublicProfile, "isCurrentUser"> | null> {
     const profile = await prisma.user.findUnique({
       where: { id },
       select: {
@@ -156,7 +160,7 @@ export class UserRepository {
   async getFollowers(
     targetUserId: string,
     currentUserId: string,
-  ): Promise<UserProfile[]> {
+  ): Promise<UserPublicProfile[]> {
     const followers = await prisma.user.findMany({
       where: {
         followees: {
@@ -177,7 +181,6 @@ export class UserRepository {
         id: true,
         firstName: true,
         lastName: true,
-        email: true,
         role: true,
         avatarUrl: true,
         _count: {
@@ -210,7 +213,7 @@ export class UserRepository {
   async getFollowees(
     targetUserId: string,
     currentUserId: string,
-  ): Promise<UserProfile[]> {
+  ): Promise<UserPublicProfile[]> {
     const followees = await prisma.user.findMany({
       where: {
         followers: {
@@ -231,7 +234,6 @@ export class UserRepository {
         id: true,
         firstName: true,
         lastName: true,
-        email: true,
         role: true,
         avatarUrl: true,
         _count: {

@@ -123,29 +123,33 @@ export class UserService {
   async getUserFollowers(
     targetUserId: string,
     currentUserId: string,
-  ): Promise<UserProfile[]> {
+  ): Promise<UserPublicProfile[]> {
     const followers = await this.userRepository.getFollowers(
       targetUserId,
       currentUserId,
     );
-    return followers.map((follower) => ({
-      ...follower,
-      avatarUrl: getCloudinaryImageUrl(follower.avatarUrl),
-    }));
+    return followers.map((follower) =>
+      userPublicProfileSchema.parse({
+        ...follower,
+        avatarUrl: getCloudinaryImageUrl(follower.avatarUrl),
+      }),
+    );
   }
 
   async getUserFollowees(
     targetUserId: string,
     currentUserId: string,
-  ): Promise<UserProfile[]> {
+  ): Promise<UserPublicProfile[]> {
     const followees = await this.userRepository.getFollowees(
       targetUserId,
       currentUserId,
     );
-    return followees.map((followee) => ({
-      ...followee,
-      avatarUrl: getCloudinaryImageUrl(followee.avatarUrl),
-    }));
+    return followees.map((followee) =>
+      userPublicProfileSchema.parse({
+        ...followee,
+        avatarUrl: getCloudinaryImageUrl(followee.avatarUrl),
+      }),
+    );
   }
 
   async getAdminUsers(
