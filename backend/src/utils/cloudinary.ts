@@ -56,10 +56,11 @@ export function getCloudinaryImageUrl(
     return "";
   }
 
-  // For development purposes, if the publicId is a full URL, return it directly without signing. As the seed data uses publicly accessible images.
+  // The seed data uses publicly accessible images. Uncomment for real authenticated images in production.
   if (
-    process.env.NODE_ENV !== "production" &&
-    (publicId.startsWith("http://") || publicId.startsWith("https://"))
+    // process.env.NODE_ENV !== "production" &&
+    publicId.startsWith("http://") ||
+    publicId.startsWith("https://")
   ) {
     return publicId;
   }
