@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { AlbumService } from "../services/album.service";
+import { getAuthenticatedUser } from "../utils/getAuthenticatedUser";
 import type {
   CreateAlbumBody,
   UpdateAlbumBody,
@@ -14,7 +15,7 @@ export class AlbumController {
   }
 
   async create(req: Request, res: Response): Promise<void> {
-    const ownerId = req.user?.id ?? "";
+    const ownerId = getAuthenticatedUser(req).id;
     await this.albumService.create(req.body as CreateAlbumBody, ownerId);
     res.status(201).json({
       status: "success",
@@ -25,7 +26,7 @@ export class AlbumController {
 
   async like(req: Request, res: Response): Promise<void> {
     const { id: albumId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const result = await this.albumService.like(albumId, userId);
     res.status(200).json({
       status: "success",
@@ -47,7 +48,7 @@ export class AlbumController {
 
   async update(req: Request, res: Response): Promise<void> {
     const { id: albumId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const updateData = req.body as UpdateAlbumBody;
     const album = await this.albumService.canEdit(albumId, userId, updateData);
     res.status(200).json({
@@ -59,7 +60,7 @@ export class AlbumController {
 
   async delete(req: Request, res: Response): Promise<void> {
     const { id: albumId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     await this.albumService.canDelete(albumId, userId);
     res.status(200).json({
       status: "success",
@@ -70,7 +71,7 @@ export class AlbumController {
 
   async unlike(req: Request, res: Response): Promise<void> {
     const { id: albumId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const result = await this.albumService.unlike(albumId, userId);
     res.status(200).json({
       status: "success",

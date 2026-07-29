@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { FeedService } from "../services/feed.service";
+import { getAuthenticatedUser } from "../utils/getAuthenticatedUser";
 import type { InfiniteLoadQuery } from "../validators/feed.validator";
 
 export class FeedController {
@@ -10,7 +11,7 @@ export class FeedController {
   }
 
   async getFeedPhotos(req: Request, res: Response): Promise<void> {
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
     const feedPhotos = await this.feedService.getFeedPhotos(
       cursor,
@@ -25,7 +26,7 @@ export class FeedController {
   }
 
   async getFeedAlbums(req: Request, res: Response): Promise<void> {
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
     const feedAlbums = await this.feedService.getFeedAlbums(
       cursor,

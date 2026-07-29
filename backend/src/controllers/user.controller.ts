@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { UserService } from "../services/user.service";
+import { getAuthenticatedUser } from "../utils/getAuthenticatedUser";
 import type { IdInput, UserUpdate } from "../validators/user.validator";
 
 export class UserController {
@@ -10,7 +11,7 @@ export class UserController {
   }
 
   async follow(req: Request, res: Response): Promise<void> {
-    const currentUserId = req.user?.id ?? "";
+    const currentUserId = getAuthenticatedUser(req).id;
     const { id: targetUserId } = req.params as IdInput;
     const result = await this.userService.follow(currentUserId, targetUserId);
     res.status(200).json({
@@ -21,7 +22,7 @@ export class UserController {
   }
 
   async getCurrentProfile(req: Request, res: Response): Promise<void> {
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const profile = await this.userService.getCurrentProfile(userId);
 
     res.status(200).json({
@@ -103,7 +104,7 @@ export class UserController {
   }
 
   async updateProfile(req: Request, res: Response): Promise<void> {
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const { user, requiresRelogin } = await this.userService.updateProfile(
       userId,
       req.body as UserUpdate,
@@ -125,7 +126,7 @@ export class UserController {
   }
 
   async unfollow(req: Request, res: Response): Promise<void> {
-    const currentUserId = req.user?.id ?? "";
+    const currentUserId = getAuthenticatedUser(req).id;
     const { id: targetUserId } = req.params as IdInput;
     const result = await this.userService.unfollow(currentUserId, targetUserId);
     res.status(200).json({

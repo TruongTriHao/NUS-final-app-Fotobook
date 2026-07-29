@@ -1,6 +1,10 @@
 import type { Request, Response } from "express";
 import type { PhotoService } from "../services/photo.service";
-import type { CreatePhotoBody, UpdatePhotoBody } from "../validators/photo.validator";
+import { getAuthenticatedUser } from "../utils/getAuthenticatedUser";
+import type {
+  CreatePhotoBody,
+  UpdatePhotoBody,
+} from "../validators/photo.validator";
 import type { IdInput } from "../validators/user.validator";
 
 export class PhotoController {
@@ -11,7 +15,7 @@ export class PhotoController {
   }
 
   async create(req: Request, res: Response): Promise<void> {
-    const ownerId = req.user?.id ?? "";
+    const ownerId = getAuthenticatedUser(req).id;
     await this.photoService.create(req.body as CreatePhotoBody, ownerId);
     res.status(201).json({
       status: "success",
@@ -22,7 +26,7 @@ export class PhotoController {
 
   async like(req: Request, res: Response): Promise<void> {
     const { id: photoId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const result = await this.photoService.like(photoId, userId);
     res.status(200).json({
       status: "success",
@@ -44,7 +48,7 @@ export class PhotoController {
 
   async update(req: Request, res: Response): Promise<void> {
     const { id: photoId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const updateData = req.body as UpdatePhotoBody;
     const photo = await this.photoService.canEdit(photoId, userId, updateData);
     res.status(200).json({
@@ -56,7 +60,7 @@ export class PhotoController {
 
   async delete(req: Request, res: Response): Promise<void> {
     const { id: photoId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     await this.photoService.canDelete(photoId, userId);
     res.status(200).json({
       status: "success",
@@ -67,7 +71,7 @@ export class PhotoController {
 
   async unlike(req: Request, res: Response): Promise<void> {
     const { id: photoId } = req.validatedParams as IdInput;
-    const userId = req.user?.id ?? "";
+    const userId = getAuthenticatedUser(req).id;
     const result = await this.photoService.unlike(photoId, userId);
     res.status(200).json({
       status: "success",
