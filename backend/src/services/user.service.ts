@@ -189,6 +189,9 @@ export class UserService {
     }
     const emailChanged = data.email !== undefined && data.email !== user.email;
     if (emailChanged) {
+      if (user.role === "admin") {
+        throw new AppError("Admin email cannot be changed", 400);
+      }
       const existingUser = await this.userRepository.findByEmail(
         data.email as string,
       );
@@ -247,14 +250,17 @@ export class UserService {
     userId: string,
     updateData: UpdateAdminUserBody,
   ): Promise<null> {
+    const targetUser = await this.userRepository.findById(userId);
+    if (!targetUser) {
+      throw new AppError("User not found", 404);
+    }
+    if (targetUser.role === "admin") {
+      throw new AppError("Admin user cannot be updated", 400);
+    }
     if (updateData.password) {
       updateData.password = await hashPassword(updateData.password);
     }
-    const currentUser = await this.userRepository.findById(userId);
-    if (!currentUser) {
-      throw new AppError("User not found", 404);
-    }
-    if (updateData.email && updateData.email !== currentUser.email) {
+    if (updateData.email && updateData.email !== targetUser.email) {
       const existingUser = await this.userRepository.findByEmail(
         updateData.email,
       );
@@ -262,7 +268,7 @@ export class UserService {
         throw new AppError("Email is already in use", 400);
       }
     }
-    const publicId = currentUser.avatarUrl;
+    const publicId = targetUser.avatarUrl;
     const { imageUrl, deleteAvatar, ...data } = updateData;
     if (deleteAvatar) {
       if (publicId) {

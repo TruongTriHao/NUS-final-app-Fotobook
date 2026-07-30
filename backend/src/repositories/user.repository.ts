@@ -65,13 +65,24 @@ export class UserRepository {
           lastLogin: true,
           avatarUrl: true,
         },
+        where: {
+          role: {
+            not: "admin",
+          },
+        },
         take,
         skip,
         orderBy: {
           firstName: "asc",
         },
       }),
-      prisma.user.count(),
+      prisma.user.count({
+        where: {
+          role: {
+            not: "admin",
+          },
+        },
+      }),
     ]);
     return { data, total };
   }
