@@ -48,13 +48,14 @@ export const photoService = {
     type: "feed" | "discover",
     cursor: string | null,
     limit: number = 20,
+    search: string = "",
   ): Promise<
     ApiResponse<{ photos: PhotoWithOwner[]; nextCursor: string | null }>
   > => {
     const response = await apiClient.get<
       ApiResponse<{ photos: PhotoWithOwner[]; nextCursor: string | null }>
     >(`/main/${type}/photos`, {
-      params: { cursor, limit },
+      params: { cursor, limit, search },
     });
     return response.data;
   },

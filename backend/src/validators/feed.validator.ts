@@ -9,6 +9,7 @@ export const infiniteLoadQuerySchema = z.object({
     .max(100, "Limit cannot exceed 100")
     .optional()
     .default(20),
+  search: z.string().trim().default(""),
 });
 
 export type InfiniteLoadQuery = z.infer<typeof infiniteLoadQuerySchema>;

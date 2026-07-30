@@ -20,13 +20,14 @@ export const albumService = {
     type: "feed" | "discover",
     cursor: string | null,
     limit: number = 20,
+    search: string = "",
   ): Promise<
     ApiResponse<{ albums: AlbumWithOwner[]; nextCursor: string | null }>
   > => {
     const response = await apiClient.get<
       ApiResponse<{ albums: AlbumWithOwner[]; nextCursor: string | null }>
     >(`/main/${type}/albums`, {
-      params: { cursor, limit },
+      params: { cursor, limit, search },
     });
     return response.data;
   },

@@ -12,10 +12,11 @@ export class FeedController {
 
   async getFeedPhotos(req: Request, res: Response): Promise<void> {
     const userId = getAuthenticatedUser(req).id;
-    const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
+    const { cursor, limit, search } = req.validatedQuery as InfiniteLoadQuery;
     const feedPhotos = await this.feedService.getFeedPhotos(
       cursor,
       limit,
+      search,
       userId,
     );
     res.status(200).json({
@@ -27,10 +28,11 @@ export class FeedController {
 
   async getFeedAlbums(req: Request, res: Response): Promise<void> {
     const userId = getAuthenticatedUser(req).id;
-    const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
+    const { cursor, limit, search } = req.validatedQuery as InfiniteLoadQuery;
     const feedAlbums = await this.feedService.getFeedAlbums(
       cursor,
       limit,
+      search,
       userId,
     );
     res.status(200).json({
@@ -42,10 +44,11 @@ export class FeedController {
 
   async getDiscoverPhotos(req: Request, res: Response): Promise<void> {
     const userId = req.user?.id ?? "";
-    const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
+    const { cursor, limit, search } = req.validatedQuery as InfiniteLoadQuery;
     const discoverPhotos = await this.feedService.getDiscoverPhotos(
       cursor,
       limit,
+      search,
       userId,
     );
     res.status(200).json({
@@ -57,10 +60,11 @@ export class FeedController {
 
   async getDiscoverAlbums(req: Request, res: Response): Promise<void> {
     const userId = req.user?.id ?? "";
-    const { cursor, limit } = req.validatedQuery as InfiniteLoadQuery;
+    const { cursor, limit, search } = req.validatedQuery as InfiniteLoadQuery;
     const discoverAlbums = await this.feedService.getDiscoverAlbums(
       cursor,
       limit,
+      search,
       userId,
     );
     res.status(200).json({

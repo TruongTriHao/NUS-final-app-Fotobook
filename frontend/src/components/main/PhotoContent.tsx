@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { photoService } from "../../services/photoService";
 import type { ApiErrorResponse } from "../../types/api";
@@ -10,6 +11,8 @@ import { PhotoCard } from "./PhotoCard";
 
 export function PhotoContent({ type }: { type: "feed" | "discover" }) {
   const [photos, setPhotos] = useState<PhotoWithOwner[]>([]);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -36,7 +39,12 @@ export function PhotoContent({ type }: { type: "feed" | "discover" }) {
         loadingRef.current = true;
         const {
           data: { photos, nextCursor },
-        } = await photoService.getPhotosForMain(type, cursorToUse, LIMIT);
+        } = await photoService.getPhotosForMain(
+          type,
+          cursorToUse,
+          LIMIT,
+          search,
+        );
         setPhotos((prevPhotos) =>
           cursorToUse ? [...prevPhotos, ...photos] : photos,
         );
@@ -51,7 +59,7 @@ export function PhotoContent({ type }: { type: "feed" | "discover" }) {
         loadingRef.current = false;
       }
     },
-    [type],
+    [search, type],
   );
 
   useEffect(() => {

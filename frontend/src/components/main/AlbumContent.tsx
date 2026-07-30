@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { albumService } from "../../services/albumService";
 import type { AlbumWithOwner } from "../../types/Album";
@@ -10,6 +11,8 @@ import { CardGrid } from "./CardGrid";
 
 export function AlbumContent({ type }: { type: "feed" | "discover" }) {
   const [albums, setAlbums] = useState<AlbumWithOwner[]>([]);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -35,7 +38,12 @@ export function AlbumContent({ type }: { type: "feed" | "discover" }) {
         loadingRef.current = true;
         const {
           data: { albums, nextCursor },
-        } = await albumService.getAlbumsForMain(type, cursorToUse, LIMIT);
+        } = await albumService.getAlbumsForMain(
+          type,
+          cursorToUse,
+          LIMIT,
+          search,
+        );
         setAlbums((prevAlbums) =>
           cursorToUse ? [...prevAlbums, ...albums] : albums,
         );
@@ -50,7 +58,7 @@ export function AlbumContent({ type }: { type: "feed" | "discover" }) {
         loadingRef.current = false;
       }
     },
-    [type],
+    [search, type],
   );
 
   useEffect(() => {

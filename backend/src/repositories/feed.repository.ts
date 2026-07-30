@@ -11,6 +11,7 @@ export class FeedRepository {
     type: "feed" | "discover",
     take: number,
     cursor: string | null = null,
+    search: string = "",
     userId?: string,
   ): Promise<{
     photos: PhotoWithOwner[];
@@ -33,6 +34,22 @@ export class FeedRepository {
             },
           },
         },
+      }),
+      ...(search && {
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
       }),
     };
 
@@ -110,6 +127,7 @@ export class FeedRepository {
     type: "feed" | "discover",
     take: number,
     cursor: string | null = null,
+    search: string = "",
     userId?: string,
   ): Promise<{
     albums: AlbumWithOwner[];
@@ -132,6 +150,22 @@ export class FeedRepository {
             },
           },
         },
+      }),
+      ...(search && {
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
       }),
     };
 

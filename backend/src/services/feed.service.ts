@@ -14,6 +14,7 @@ export class FeedService {
   async getFeedPhotos(
     cursor: string | null,
     limit: number,
+    search: string,
     currentUserId: string,
   ): Promise<{ photos: PhotoWithOwner[]; nextCursor: string | null }> {
     if (!currentUserId) {
@@ -23,6 +24,7 @@ export class FeedService {
       "feed",
       limit,
       cursor,
+      search,
       currentUserId,
     );
     return {
@@ -37,6 +39,7 @@ export class FeedService {
   async getFeedAlbums(
     cursor: string | null,
     limit: number,
+    search: string,
     currentUserId: string,
   ): Promise<{ albums: AlbumWithOwner[]; nextCursor: string | null }> {
     if (!currentUserId) {
@@ -46,6 +49,7 @@ export class FeedService {
       "feed",
       limit,
       cursor,
+      search,
       currentUserId,
     );
     return {
@@ -60,12 +64,14 @@ export class FeedService {
   async getDiscoverPhotos(
     cursor: string | null,
     limit: number,
+    search: string,
     currentUserId: string,
   ): Promise<{ photos: PhotoWithOwner[]; nextCursor: string | null }> {
     const { photos, nextCursor } = await this.feedRepository.getPhotos(
       "discover",
       limit,
       cursor,
+      search,
       currentUserId,
     );
     return {
@@ -80,12 +86,14 @@ export class FeedService {
   async getDiscoverAlbums(
     cursor: string | null,
     limit: number,
+    search: string,
     currentUserId: string,
   ): Promise<{ albums: AlbumWithOwner[]; nextCursor: string | null }> {
     const { albums, nextCursor } = await this.feedRepository.getAlbums(
       "discover",
       limit,
       cursor,
+      search,
       currentUserId,
     );
     return {
