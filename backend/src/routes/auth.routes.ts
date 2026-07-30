@@ -1,6 +1,6 @@
 import express from "express";
 import { AuthController } from "../controllers/auth.controller";
-import { requireAuth } from "../middlewares/auth";
+import { optionalAuth, requireAuth } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { UserRepository } from "../repositories/user.repository";
 import { AuthService } from "../services/auth.service";
@@ -18,7 +18,7 @@ const userRepository = new UserRepository();
 const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
-authRouter.get("/me", requireAuth, authController.getMe.bind(authController));
+authRouter.get("/me", optionalAuth, authController.getMe.bind(authController));
 
 authRouter.post(
   "/register",

@@ -29,10 +29,10 @@ export class AuthService {
     this.userRepository = userRepository;
   }
 
-  async getMe(userId: string): Promise<UserResponse> {
+  async getMe(userId: string): Promise<UserResponse | null> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new AppError("User not found", 404);
+      return null;
     }
     return userResponseSchema.parse({
       ...user,
