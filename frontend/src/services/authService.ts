@@ -3,6 +3,12 @@ import type { User } from "../types/User";
 import { apiClient } from "./apiClient";
 
 export const authService = {
+  getMe: async (): Promise<ApiResponse<{ user: User }>> => {
+    const response =
+      await apiClient.get<ApiResponse<{ user: User }>>("/auth/me");
+    return response.data;
+  },
+
   login: async (
     email: string,
     password: string,

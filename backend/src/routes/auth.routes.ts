@@ -18,6 +18,8 @@ const userRepository = new UserRepository();
 const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
+authRouter.get("/me", requireAuth, authController.getMe.bind(authController));
+
 authRouter.post(
   "/register",
   validate({ body: registerSchema }),

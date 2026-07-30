@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { AuthService } from "../services/auth.service";
+import { getAuthenticatedUser } from "../utils/getAuthenticatedUser";
 import { convertJwtExpiresToMaxAge } from "../utils/jwt";
 import type {
   EmailVerify,
@@ -14,6 +15,16 @@ export class AuthController {
 
   constructor(authService: AuthService) {
     this.authService = authService;
+  }
+
+  async getMe(req: Request, res: Response): Promise<void> {
+    const id = getAuthenticatedUser(req).id;
+    const user = await this.authService.getMe(id);
+    res.status(200).json({
+      status: "success",
+      message: "User retrieved successfully",
+      data: { user },
+    });
   }
 
   async register(req: Request, res: Response): Promise<void> {

@@ -1,27 +1,36 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { authService } from "../services/authService";
+import type { ApiErrorResponse } from "../types/api";
 import type { User } from "../types/User";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }: { children?: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const raw = localStorage.getItem("user");
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as User;
-    } catch {
-      localStorage.removeItem("user");
-      return null;
-    }
-  });
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const {
+          data: { user },
+        } = await authService.getMe();
+        setUser(user);
+      } catch (error) {
+        toast.error(
+          (error as ApiErrorResponse).message || "Failed to load user",
+        );
+        setUser(null);
+      }
+    };
+    void loadCurrentUser();
+  }, []);
 
   const login = useCallback((nextUser: User) => {
     setUser(nextUser);
-    localStorage.setItem("user", JSON.stringify(nextUser));
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
-    localStorage.removeItem("user");
   }, []);
 
   const value = useMemo(() => {

@@ -17,13 +17,27 @@ import type {
   LoginResponse,
   Register,
 } from "../validators/auth.validator";
-import { userResponseSchema } from "../validators/user.validator";
+import {
+  userResponseSchema,
+  type UserResponse,
+} from "../validators/user.validator";
 
 export class AuthService {
   private userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
+  }
+
+  async getMe(userId: string): Promise<UserResponse> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+    return userResponseSchema.parse({
+      ...user,
+      avatarUrl: getCloudinaryImageUrl(user.avatarUrl),
+    });
   }
 
   async register(data: Register): Promise<void> {
