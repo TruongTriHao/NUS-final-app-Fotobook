@@ -24,7 +24,10 @@ async function main() {
       data: {
         firstName,
         lastName,
-        email: faker.internet.email({ firstName, lastName }).slice(0, 255),
+        email: faker.internet
+          .email({ firstName, lastName })
+          .toLowerCase()
+          .slice(0, 255),
         password: await hashPassword("password"),
         avatarUrl: faker.helpers.maybe(() => faker.image.avatar(), {
           probability: 0.8,
