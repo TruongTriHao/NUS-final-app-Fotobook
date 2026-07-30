@@ -11,7 +11,6 @@ import { AlbumInput } from "../ui/AlbumInput";
 import { ConfirmModal } from "../ui/ConfirmModal";
 import { DeleteButton } from "../ui/DeleteButton";
 import { InputField } from "../ui/InputField";
-import { Loading } from "../ui/Loading";
 import { PhotoInput } from "../ui/PhotoInput";
 import { SaveButton } from "../ui/SaveButton";
 import { TextInput } from "../ui/TextInput";
@@ -104,7 +103,6 @@ export function NewForm({
           : await albumService.createAlbum(formData);
       }
       toast.success(response.message);
-      void navigate(-1);
     } catch (error) {
       toast.error(
         (error as ApiErrorResponse).message ||
@@ -114,10 +112,6 @@ export function NewForm({
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <>
@@ -184,7 +178,7 @@ export function NewForm({
             onPhotosChange={setAlbumPhotos}
           />
         )}
-        <SaveButton className="self-start" />
+        <SaveButton className="self-start" disabled={loading} />
         {editMode && (
           <DeleteButton
             disabled={deleteLoading}

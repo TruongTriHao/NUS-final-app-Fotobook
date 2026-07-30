@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { userService } from "../../services/userService";
 import type { ApiErrorResponse } from "../../types/api";
 import type { AdminUserData } from "../../types/User";
 import { InputField } from "../ui/InputField";
-import { Loading } from "../ui/Loading";
 import { PhotoInput } from "../ui/PhotoInput";
 import { SaveButton } from "../ui/SaveButton";
 import { TextInput } from "../ui/TextInput";
 import { Title } from "../ui/Title";
 
 export function EditProfileAdminForm({ initial }: { initial: AdminUserData }) {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
 
@@ -35,7 +32,6 @@ export function EditProfileAdminForm({ initial }: { initial: AdminUserData }) {
         formData,
       );
       toast.success(message);
-      void navigate("/admin/users");
     } catch (error) {
       toast.error(
         (error as ApiErrorResponse).message || "Failed to update user profile.",
@@ -44,10 +40,6 @@ export function EditProfileAdminForm({ initial }: { initial: AdminUserData }) {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <form
@@ -142,7 +134,7 @@ export function EditProfileAdminForm({ initial }: { initial: AdminUserData }) {
             />
           </div>
         </InputField>
-        <SaveButton />
+        <SaveButton disabled={loading} />
       </div>
     </form>
   );

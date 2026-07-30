@@ -5,7 +5,6 @@ import { userService } from "../../services/userService";
 import type { ApiErrorResponse } from "../../types/api";
 import type { User } from "../../types/User";
 import { InputField } from "../ui/InputField";
-import { Loading } from "../ui/Loading";
 import { PhotoInput } from "../ui/PhotoInput";
 import { SaveButton } from "../ui/SaveButton";
 import { TextInput } from "../ui/TextInput";
@@ -60,10 +59,6 @@ export function ProfileForm({ initial }: { initial: User }) {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <>
@@ -132,7 +127,7 @@ export function ProfileForm({ initial }: { initial: User }) {
               className="mx-0.75 md:mx-1.5 p-1.25 md:p-2.5"
             />
           </InputField>
-          <SaveButton />
+          <SaveButton disabled={loading} />
         </div>
       </form>
       <form
@@ -183,7 +178,7 @@ export function ProfileForm({ initial }: { initial: User }) {
               className="mx-0.75 md:mx-1.5 p-1.25 md:p-2.5"
             />
           </InputField>
-          <SaveButton />
+          <SaveButton disabled={loading} />
         </div>
       </form>
     </>
