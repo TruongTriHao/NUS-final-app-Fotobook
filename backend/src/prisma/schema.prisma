@@ -64,6 +64,7 @@ model Photo {
   updatedAt DateTime @updatedAt @db.Timestamptz
 
   @@index([ownerId])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin)
 }
 
 model Album {
@@ -85,6 +86,7 @@ model Album {
   updatedAt DateTime @updatedAt @db.Timestamptz
 
   @@index([ownerId])
+  @@index([title(ops: raw("gin_trgm_ops")), description(ops: raw("gin_trgm_ops"))], type: Gin)
 }
 
 model Follow {
