@@ -2,7 +2,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
 import { passport } from "./config/passport";
@@ -15,14 +14,6 @@ import { photoRouter } from "./routes/photo.routes";
 import { userRouter } from "./routes/user.routes";
 import { AppError } from "./utils/AppError";
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 100,
-  handler: (_req: Request, _res: Response, next: NextFunction) => {
-    next(new AppError("Too many requests. Please try again later.", 429));
-  },
-});
-
 export const app = express();
 
 app.use(helmet());
@@ -32,7 +23,6 @@ app.use(
     credentials: true,
   }),
 );
-app.use(limiter);
 app.use(morgan(process.env.NODE_ENV === "development" ? "dev" : "combined"));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());
